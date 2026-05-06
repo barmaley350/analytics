@@ -740,7 +740,7 @@ pivot = df.pivot_table(
     aggfunc="sum",
     fill_value=0,
     margins=True,
-    margins_name="Total"    
+    margins_name="Total"
 )
 top_10 = pivot.nlargest(10, "Total")
 top_10 = top_10.reset_index()
@@ -760,4 +760,56 @@ display_data(top_10, index=True)
 |  7 | Blues              |  10.89 |  10.89 |  19.8  |   8.91 |   9.9  |   60.39 |
 |  8 | Drama              |   0    |  17.91 |  11.94 |  17.91 |   9.95 |   57.71 |
 |  9 | Classical          |   0    |  13.86 |   9.9  |  16.83 |   0    |   40.59 |
+
+
+# Расчет продаж по сотрудникам в абсалютном и процентном отношении 
+
+Запрос формирует аналитическую сводку по продажам в разрезе сотрудников: объединяет имя и фамилию сотрудника в единое поле (FIO), подсчитывает количество обработанных каждым сотрудником счетов‑фактур (`InvoicesCount`) и суммарную выручку (`Salles`), а также выводит общие показатели по всей компании (`TotalInvoices` и `TotalSales`). Для каждого сотрудника рассчитываются доли от общих показателей — процент от общего числа счетов (`InvoicesPercentage`) и процент от общей выручки (`SalesPercentage`), — после чего результаты сортируются по убыванию доли выручки.
+
+
+```python
+sql = """WITH SalesSummary AS (
+    SELECT
+        EmployeeId,
+        LastName,
+        FirstName,
+        Title,
+        COUNT(InvoiceId) AS InvoicesCount,
+        SUM(COUNT(InvoiceId)) OVER () AS TotalInvoices,
+        SUM(Total) AS Salles,
+        SUM(SUM(Total)) OVER () AS TotalSales
+    FROM (
+        SELECT *
+        FROM Employee e
+        LEFT JOIN Customer c ON e.EmployeeId = c.SupportRepId
+        LEFT JOIN Invoice i ON c.CustomerId = i.CustomerId
+    ) src
+    GROUP BY EmployeeId, LastName, FirstName, Title
+)
+SELECT
+    FirstName || " " || LastName as FIO,
+    Title,
+    InvoicesCount,
+    TotalInvoices,
+    ROUND((InvoicesCount * 100.0 / TotalInvoices), 2) AS InvoicesPercentage,
+    Salles,
+    TotalSales,
+    ROUND((Salles * 100.0 / TotalSales), 2) AS SalesPercentage
+FROM SalesSummary
+ORDER BY SalesPercentage DESC;"""
+
+display_data(data:=get_data(sql))
+```
+
+
+| FIO              | Title               |   InvoicesCount |   TotalInvoices |   InvoicesPercentage |   Salles |   TotalSales |   SalesPercentage |
+|:-----------------|:--------------------|----------------:|----------------:|---------------------:|---------:|-------------:|------------------:|
+| Jane Peacock     | Sales Support Agent |             146 |             412 |                35.44 |   833.04 |       2328.6 |             35.77 |
+| Margaret Park    | Sales Support Agent |             140 |             412 |                33.98 |   775.4  |       2328.6 |             33.3  |
+| Steve Johnson    | Sales Support Agent |             126 |             412 |                30.58 |   720.16 |       2328.6 |             30.93 |
+| Andrew Adams     | General Manager     |               0 |             412 |                 0    |   nan    |       2328.6 |            nan    |
+| Nancy Edwards    | Sales Manager       |               0 |             412 |                 0    |   nan    |       2328.6 |            nan    |
+| Michael Mitchell | IT Manager          |               0 |             412 |                 0    |   nan    |       2328.6 |            nan    |
+| Robert King      | IT Staff            |               0 |             412 |                 0    |   nan    |       2328.6 |            nan    |
+| Laura Callahan   | IT Staff            |               0 |             412 |                 0    |   nan    |       2328.6 |            nan    |
 

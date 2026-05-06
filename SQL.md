@@ -791,10 +791,10 @@ SELECT
     Title AS Department,
     Invoices,
     Salles,
-    -- TotalInvoices,
-    -- TotalSales,
     ROUND((Invoices * 100.0 / TotalInvoices), 2) AS InvoicesPercentage,
-    ROUND((Salles * 100.0 / TotalSales), 2) AS SalesPercentage
+    ROUND((Salles * 100.0 / TotalSales), 2) AS SalesPercentage,
+    TotalInvoices,
+    TotalSales
 FROM SalesSummary
 ORDER BY SalesPercentage DESC;"""
 
@@ -802,14 +802,14 @@ display_data(data:=get_data(sql))
 ```
 
 
-| FIO              | Department          |   Invoices |   Salles |   InvoicesPercentage |   SalesPercentage |
-|:-----------------|:--------------------|-----------:|---------:|---------------------:|------------------:|
-| Jane Peacock     | Sales Support Agent |        146 |   833.04 |                35.44 |             35.77 |
-| Margaret Park    | Sales Support Agent |        140 |   775.4  |                33.98 |             33.3  |
-| Steve Johnson    | Sales Support Agent |        126 |   720.16 |                30.58 |             30.93 |
-| Andrew Adams     | General Manager     |          0 |     0    |                 0    |              0    |
-| Nancy Edwards    | Sales Manager       |          0 |     0    |                 0    |              0    |
-| Michael Mitchell | IT Manager          |          0 |     0    |                 0    |              0    |
-| Robert King      | IT Staff            |          0 |     0    |                 0    |              0    |
-| Laura Callahan   | IT Staff            |          0 |     0    |                 0    |              0    |
+| FIO              | Department          |   Invoices |   Salles |   InvoicesPercentage |   SalesPercentage |   TotalInvoices |   TotalSales |
+|:-----------------|:--------------------|-----------:|---------:|---------------------:|------------------:|----------------:|-------------:|
+| Jane Peacock     | Sales Support Agent |        146 |   833.04 |                35.44 |             35.77 |             412 |       2328.6 |
+| Margaret Park    | Sales Support Agent |        140 |   775.4  |                33.98 |             33.3  |             412 |       2328.6 |
+| Steve Johnson    | Sales Support Agent |        126 |   720.16 |                30.58 |             30.93 |             412 |       2328.6 |
+| Andrew Adams     | General Manager     |          0 |     0    |                 0    |              0    |             412 |       2328.6 |
+| Nancy Edwards    | Sales Manager       |          0 |     0    |                 0    |              0    |             412 |       2328.6 |
+| Michael Mitchell | IT Manager          |          0 |     0    |                 0    |              0    |             412 |       2328.6 |
+| Robert King      | IT Staff            |          0 |     0    |                 0    |              0    |             412 |       2328.6 |
+| Laura Callahan   | IT Staff            |          0 |     0    |                 0    |              0    |             412 |       2328.6 |
 

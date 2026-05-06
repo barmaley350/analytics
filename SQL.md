@@ -790,11 +790,11 @@ SELECT
     FirstName || " " || LastName as FIO,
     Title,
     InvoicesCount,
-    TotalInvoices,
-    ROUND((InvoicesCount * 100.0 / TotalInvoices), 2) AS InvoicesPercentage,
     Salles,
-    TotalSales,
-    ROUND((Salles * 100.0 / TotalSales), 2) AS SalesPercentage
+    -- TotalInvoices,
+    -- TotalSales,
+    ROUND((InvoicesCount * 100.0 / TotalInvoices), 2) || ' %' AS InvoicesPercentage,
+    ROUND((Salles * 100.0 / TotalSales), 2) || ' %' AS SalesPercentage
 FROM SalesSummary
 ORDER BY SalesPercentage DESC;"""
 
@@ -802,14 +802,14 @@ display_data(data:=get_data(sql))
 ```
 
 
-| FIO              | Title               |   InvoicesCount |   TotalInvoices |   InvoicesPercentage |   Salles |   TotalSales |   SalesPercentage |
-|:-----------------|:--------------------|----------------:|----------------:|---------------------:|---------:|-------------:|------------------:|
-| Jane Peacock     | Sales Support Agent |             146 |             412 |                35.44 |   833.04 |       2328.6 |             35.77 |
-| Margaret Park    | Sales Support Agent |             140 |             412 |                33.98 |   775.4  |       2328.6 |             33.3  |
-| Steve Johnson    | Sales Support Agent |             126 |             412 |                30.58 |   720.16 |       2328.6 |             30.93 |
-| Andrew Adams     | General Manager     |               0 |             412 |                 0    |   nan    |       2328.6 |            nan    |
-| Nancy Edwards    | Sales Manager       |               0 |             412 |                 0    |   nan    |       2328.6 |            nan    |
-| Michael Mitchell | IT Manager          |               0 |             412 |                 0    |   nan    |       2328.6 |            nan    |
-| Robert King      | IT Staff            |               0 |             412 |                 0    |   nan    |       2328.6 |            nan    |
-| Laura Callahan   | IT Staff            |               0 |             412 |                 0    |   nan    |       2328.6 |            nan    |
+| FIO              | Title               |   InvoicesCount |   Salles | InvoicesPercentage   | SalesPercentage   |
+|:-----------------|:--------------------|----------------:|---------:|:---------------------|:------------------|
+| Jane Peacock     | Sales Support Agent |             146 |   833.04 | 35.44 %              | 35.77 %           |
+| Margaret Park    | Sales Support Agent |             140 |   775.4  | 33.98 %              | 33.3 %            |
+| Steve Johnson    | Sales Support Agent |             126 |   720.16 | 30.58 %              | 30.93 %           |
+| Andrew Adams     | General Manager     |               0 |   nan    | 0.0 %                | nan               |
+| Nancy Edwards    | Sales Manager       |               0 |   nan    | 0.0 %                | nan               |
+| Michael Mitchell | IT Manager          |               0 |   nan    | 0.0 %                | nan               |
+| Robert King      | IT Staff            |               0 |   nan    | 0.0 %                | nan               |
+| Laura Callahan   | IT Staff            |               0 |   nan    | 0.0 %                | nan               |
 

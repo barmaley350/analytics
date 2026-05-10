@@ -311,6 +311,197 @@ def display_data(data: pd.DataFrame, head: bool | int = False, index: bool = Fal
         display(Markdown(data.to_markdown(index=index)))
 ```
 
+## Общая информация о таблице `customer`
+
+
+```python
+sql = "SELECT * FROM invoice;"
+df = get_data(sql)
+df.describe()
+```
+
+
+
+
+<div>
+
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>InvoiceId</th>
+      <th>CustomerId</th>
+      <th>Total</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>count</th>
+      <td>412.000000</td>
+      <td>412.000000</td>
+      <td>412.000000</td>
+    </tr>
+    <tr>
+      <th>mean</th>
+      <td>206.500000</td>
+      <td>29.929612</td>
+      <td>5.651942</td>
+    </tr>
+    <tr>
+      <th>std</th>
+      <td>119.078406</td>
+      <td>17.010585</td>
+      <td>4.745320</td>
+    </tr>
+    <tr>
+      <th>min</th>
+      <td>1.000000</td>
+      <td>1.000000</td>
+      <td>0.990000</td>
+    </tr>
+    <tr>
+      <th>25%</th>
+      <td>103.750000</td>
+      <td>15.000000</td>
+      <td>1.980000</td>
+    </tr>
+    <tr>
+      <th>50%</th>
+      <td>206.500000</td>
+      <td>30.000000</td>
+      <td>3.960000</td>
+    </tr>
+    <tr>
+      <th>75%</th>
+      <td>309.250000</td>
+      <td>45.000000</td>
+      <td>8.910000</td>
+    </tr>
+    <tr>
+      <th>max</th>
+      <td>412.000000</td>
+      <td>59.000000</td>
+      <td>25.860000</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+
+
+
+```python
+df.dtypes
+```
+
+
+
+
+    InvoiceId              int64
+    CustomerId             int64
+    InvoiceDate              str
+    BillingAddress           str
+    BillingCity              str
+    BillingState             str
+    BillingCountry           str
+    BillingPostalCode        str
+    Total                float64
+    dtype: object
+
+
+
+
+```python
+df.head()
+```
+
+
+
+
+<div>
+
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>InvoiceId</th>
+      <th>CustomerId</th>
+      <th>InvoiceDate</th>
+      <th>BillingAddress</th>
+      <th>BillingCity</th>
+      <th>BillingState</th>
+      <th>BillingCountry</th>
+      <th>BillingPostalCode</th>
+      <th>Total</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>1</td>
+      <td>2</td>
+      <td>2021-01-01 00:00:00</td>
+      <td>Theodor-Heuss-Straße 34</td>
+      <td>Stuttgart</td>
+      <td>NaN</td>
+      <td>Germany</td>
+      <td>70174</td>
+      <td>1.98</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2</td>
+      <td>4</td>
+      <td>2021-01-02 00:00:00</td>
+      <td>Ullevålsveien 14</td>
+      <td>Oslo</td>
+      <td>NaN</td>
+      <td>Norway</td>
+      <td>0171</td>
+      <td>3.96</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>3</td>
+      <td>8</td>
+      <td>2021-01-03 00:00:00</td>
+      <td>Grétrystraat 63</td>
+      <td>Brussels</td>
+      <td>NaN</td>
+      <td>Belgium</td>
+      <td>1000</td>
+      <td>5.94</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>4</td>
+      <td>14</td>
+      <td>2021-01-06 00:00:00</td>
+      <td>8210 111 ST NW</td>
+      <td>Edmonton</td>
+      <td>AB</td>
+      <td>Canada</td>
+      <td>T6G 2C7</td>
+      <td>8.91</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>5</td>
+      <td>23</td>
+      <td>2021-01-11 00:00:00</td>
+      <td>69 Salem Street</td>
+      <td>Boston</td>
+      <td>MA</td>
+      <td>USA</td>
+      <td>2113</td>
+      <td>13.86</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+
+
 ##  Выбрать все записи из таблицы `customer`
 Запрос `SELECT * FROM customer LIMIT 5;` извлекает все столбцы из таблицы `customer` и возвращает первые 5 строк данных — остальные записи игнорируются.
 
@@ -394,7 +585,7 @@ plt.show()
 
 
     
-![png](images/output_11_0.png)
+![png](images/output_15_0.png)
     
 
 
@@ -508,7 +699,7 @@ plt.show()
 
 
     
-![png](images/output_18_0.png)
+![png](images/output_22_0.png)
     
 
 
@@ -634,7 +825,7 @@ plt.show()
 
 
     
-![png](images/output_25_0.png)
+![png](images/output_29_0.png)
     
 
 

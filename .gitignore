@@ -2,4 +2,17 @@
 __pycache__
 run.sh
 test.md
+.env
+
+# Data
+db/
+
+# Apache Superset
 services/superset/data/
+
+# Clickhouse
+services/clickhouse/data/db/
+services/clickhouse/data/log/
+
+# PostgreSQL
+services/postgres/db/

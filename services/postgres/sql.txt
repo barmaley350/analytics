@@ -1,0 +1,71 @@
+-- 1. Удаляем таблицу customers, если она существует, затем создаём
+DROP TABLE IF EXISTS customers CASCADE;
+
+CREATE TABLE customers (
+    customer_id SERIAL PRIMARY KEY,
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    phone VARCHAR(20)
+);
+
+-- 2. Удаляем таблицу departments, если она существует, затем создаём
+DROP TABLE IF EXISTS departments CASCADE;
+
+CREATE TABLE departments (
+    department_id SERIAL PRIMARY KEY,
+    department_name VARCHAR(20) NOT NULL UNIQUE,
+    description TEXT
+);
+
+-- 3. Удаляем таблицу products, если она существует, затем создаём
+DROP TABLE IF EXISTS products CASCADE;
+
+CREATE TABLE products (
+    product_id SERIAL PRIMARY KEY,
+    product_name VARCHAR(255) NOT NULL UNIQUE,
+    description TEXT
+);
+
+-- 4. Удаляем таблицу categories, если она существует, затем создаём
+DROP TABLE IF EXISTS categories CASCADE;
+
+CREATE TABLE categories (
+    category_id SERIAL PRIMARY KEY,
+    category_name VARCHAR(20) NOT NULL UNIQUE,
+    description TEXT
+);
+
+-- 5. Удаляем таблицу orders, если она существует, затем создаём с корректными внешними ключами
+DROP TABLE IF EXISTS orders CASCADE;
+
+CREATE TABLE orders (
+    order_id BIGSERIAL PRIMARY KEY,
+    customer_id INTEGER NOT NULL,
+    product_id INTEGER NOT NULL,
+    category_id INTEGER NOT NULL,
+    department_id INTEGER NOT NULL,
+    total_amount DECIMAL(12,2) NOT NULL,
+    order_date TIMESTAMPTZ DEFAULT NOW(),
+
+    -- Внешние ключи
+    CONSTRAINT fk_orders_customer
+        FOREIGN KEY (customer_id)
+        REFERENCES customers(customer_id)
+        ON DELETE RESTRICT,
+
+    CONSTRAINT fk_orders_product
+        FOREIGN KEY (product_id)
+        REFERENCES products(product_id)
+        ON DELETE RESTRICT,
+
+    CONSTRAINT fk_orders_category
+        FOREIGN KEY (category_id)
+        REFERENCES categories(category_id)
+        ON DELETE RESTRICT,  -- добавлена запятая
+
+    CONSTRAINT fk_orders_department
+        FOREIGN KEY (department_id)
+        REFERENCES departments(department_id)
+        ON DELETE RESTRICT        
+);

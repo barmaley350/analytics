@@ -1,0 +1,3 @@
+docker run --rm -e CLICKHOUSE_SKIP_USER_SETUP=1 --name some-clickhouse-server -p 8123:8123  clickhouse/clickhouse-server
+
+docker compose --file docker-compose-clickhouse.yaml up --build

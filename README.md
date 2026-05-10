@@ -4,7 +4,7 @@
 
 | Файл | Url | Описание | 
 |---------|-----------|---------------|
-| SETUP.md | [SETUP.md](SETUP.md) | Как работать с репозиторием локально |
-| SQL EXAMPLES | [SQL EXAMPLES (.md)](SQL.md) | `md` версия для изучения |
+| SETUP.md | [SETUP.md](./md/SETUP.md) | Как работать с репозиторием локально |
+| SQL EXAMPLES | [SQL EXAMPLES (.md)](./md/SQL.md) | `md` версия для изучения |
 | SQL EXAMPLES | [SQL EXAMPLES (.ipynb)](./services/jupyter/data/examples.ipynb) | `ipynb` версия для изучения |
 | SQLBOOK.md | [SQLBOOK.pdf](./files/SQLBOOK.pdf) | pdf версия для скачивания |

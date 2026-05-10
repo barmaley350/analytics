@@ -46,7 +46,7 @@ def append_md(file_path: Path, output_md: Path):
 
     new_content = content.replace(
         '![img_1](../files/db_schemes/chinook_scheme.png)',
-        '![img_1](./db_schemes/chinook_scheme.png)'
+        '![img_1](./files/db_schemes/chinook_scheme.png)'
     )
 
     with output_md.open("a", encoding="utf-8") as output_file:

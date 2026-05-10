@@ -317,189 +317,54 @@ def display_data(data: pd.DataFrame, head: bool | int = False, index: bool = Fal
 ```python
 sql = "SELECT * FROM invoice;"
 df = get_data(sql)
-df.describe()
+display_data(df.describe(), index=True)
 ```
 
 
-
-
-<div>
-
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>InvoiceId</th>
-      <th>CustomerId</th>
-      <th>Total</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>count</th>
-      <td>412.000000</td>
-      <td>412.000000</td>
-      <td>412.000000</td>
-    </tr>
-    <tr>
-      <th>mean</th>
-      <td>206.500000</td>
-      <td>29.929612</td>
-      <td>5.651942</td>
-    </tr>
-    <tr>
-      <th>std</th>
-      <td>119.078406</td>
-      <td>17.010585</td>
-      <td>4.745320</td>
-    </tr>
-    <tr>
-      <th>min</th>
-      <td>1.000000</td>
-      <td>1.000000</td>
-      <td>0.990000</td>
-    </tr>
-    <tr>
-      <th>25%</th>
-      <td>103.750000</td>
-      <td>15.000000</td>
-      <td>1.980000</td>
-    </tr>
-    <tr>
-      <th>50%</th>
-      <td>206.500000</td>
-      <td>30.000000</td>
-      <td>3.960000</td>
-    </tr>
-    <tr>
-      <th>75%</th>
-      <td>309.250000</td>
-      <td>45.000000</td>
-      <td>8.910000</td>
-    </tr>
-    <tr>
-      <th>max</th>
-      <td>412.000000</td>
-      <td>59.000000</td>
-      <td>25.860000</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-
+|       |   InvoiceId |   CustomerId |     Total |
+|:------|------------:|-------------:|----------:|
+| count |     412     |     412      | 412       |
+| mean  |     206.5   |      29.9296 |   5.65194 |
+| std   |     119.078 |      17.0106 |   4.74532 |
+| min   |       1     |       1      |   0.99    |
+| 25%   |     103.75  |      15      |   1.98    |
+| 50%   |     206.5   |      30      |   3.96    |
+| 75%   |     309.25  |      45      |   8.91    |
+| max   |     412     |      59      |  25.86    |
 
 
 
 ```python
-df.dtypes
+display_data(df.dtypes, index=True)
 ```
 
 
-
-
-    InvoiceId              int64
-    CustomerId             int64
-    InvoiceDate              str
-    BillingAddress           str
-    BillingCity              str
-    BillingState             str
-    BillingCountry           str
-    BillingPostalCode        str
-    Total                float64
-    dtype: object
-
+|                   | 0       |
+|:------------------|:--------|
+| InvoiceId         | int64   |
+| CustomerId        | int64   |
+| InvoiceDate       | str     |
+| BillingAddress    | str     |
+| BillingCity       | str     |
+| BillingState      | str     |
+| BillingCountry    | str     |
+| BillingPostalCode | str     |
+| Total             | float64 |
 
 
 
 ```python
-df.head()
+display_data(df.head(), index=True)
 ```
 
 
-
-
-<div>
-
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>InvoiceId</th>
-      <th>CustomerId</th>
-      <th>InvoiceDate</th>
-      <th>BillingAddress</th>
-      <th>BillingCity</th>
-      <th>BillingState</th>
-      <th>BillingCountry</th>
-      <th>BillingPostalCode</th>
-      <th>Total</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>1</td>
-      <td>2</td>
-      <td>2021-01-01 00:00:00</td>
-      <td>Theodor-Heuss-Straße 34</td>
-      <td>Stuttgart</td>
-      <td>NaN</td>
-      <td>Germany</td>
-      <td>70174</td>
-      <td>1.98</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>2</td>
-      <td>4</td>
-      <td>2021-01-02 00:00:00</td>
-      <td>Ullevålsveien 14</td>
-      <td>Oslo</td>
-      <td>NaN</td>
-      <td>Norway</td>
-      <td>0171</td>
-      <td>3.96</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>3</td>
-      <td>8</td>
-      <td>2021-01-03 00:00:00</td>
-      <td>Grétrystraat 63</td>
-      <td>Brussels</td>
-      <td>NaN</td>
-      <td>Belgium</td>
-      <td>1000</td>
-      <td>5.94</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>4</td>
-      <td>14</td>
-      <td>2021-01-06 00:00:00</td>
-      <td>8210 111 ST NW</td>
-      <td>Edmonton</td>
-      <td>AB</td>
-      <td>Canada</td>
-      <td>T6G 2C7</td>
-      <td>8.91</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>5</td>
-      <td>23</td>
-      <td>2021-01-11 00:00:00</td>
-      <td>69 Salem Street</td>
-      <td>Boston</td>
-      <td>MA</td>
-      <td>USA</td>
-      <td>2113</td>
-      <td>13.86</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-
+|    |   InvoiceId |   CustomerId | InvoiceDate         | BillingAddress          | BillingCity   | BillingState   | BillingCountry   | BillingPostalCode   |   Total |
+|---:|------------:|-------------:|:--------------------|:------------------------|:--------------|:---------------|:-----------------|:--------------------|--------:|
+|  0 |           1 |            2 | 2021-01-01 00:00:00 | Theodor-Heuss-Straße 34 | Stuttgart     | nan            | Germany          | 70174               |    1.98 |
+|  1 |           2 |            4 | 2021-01-02 00:00:00 | Ullevålsveien 14        | Oslo          | nan            | Norway           | 0171                |    3.96 |
+|  2 |           3 |            8 | 2021-01-03 00:00:00 | Grétrystraat 63         | Brussels      | nan            | Belgium          | 1000                |    5.94 |
+|  3 |           4 |           14 | 2021-01-06 00:00:00 | 8210 111 ST NW          | Edmonton      | AB             | Canada           | T6G 2C7             |    8.91 |
+|  4 |           5 |           23 | 2021-01-11 00:00:00 | 69 Salem Street         | Boston        | MA             | USA              | 2113                |   13.86 |
 
 
 ##  Выбрать все записи из таблицы `customer`

@@ -450,7 +450,7 @@ plt.show()
 
 
     
-![png](images/output_15_0.png)
+![png](files/jupyter/images/output_15_0.png)
     
 
 
@@ -564,7 +564,7 @@ plt.show()
 
 
     
-![png](images/output_22_0.png)
+![png](files/jupyter/images/output_22_0.png)
     
 
 
@@ -690,7 +690,7 @@ plt.show()
 
 
     
-![png](images/output_29_0.png)
+![png](files/jupyter/images/output_29_0.png)
     
 
 

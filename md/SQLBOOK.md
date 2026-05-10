@@ -283,7 +283,7 @@ LIMIT 10;
 - **employee** — данные о сотрудниках и представителях службы поддержки 
 
 # Схема базы данных **Chinook**
-![img_1](./files/db/chinook_scheme.png)
+![img_1](files/db_schemes/chinook_scheme.png)
 
 # Примеры запросов при работе с базой данных **Chinook**
 

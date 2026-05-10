@@ -43,5 +43,5 @@ if __name__ == "__main__":
         Path(__file__).parent.parent / "jupyter/notebooks/header.ipynb",
         Path(__file__).parent.parent / "jupyter/notebooks/examples.ipynb",
     ]
-    output_md = Path(__file__).parent.parent.parent / "md/SQL.md"
+    output_md = Path(__file__).parent.parent.parent / "md/SQLBOOK.md"
     convert_and_merge(notebooks, output_md)

@@ -16,4 +16,4 @@
 - **employee** — данные о сотрудниках и представителях службы поддержки 
 
 # Схема базы данных **Chinook**
-![img_1](../files/db/chinook_scheme.png)
+![img_1](./files/db/chinook_scheme.png)

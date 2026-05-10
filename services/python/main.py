@@ -45,7 +45,7 @@ def append_md(file_path: Path, output_md: Path):
         content = input_file.read()
 
     with output_md.open("a", encoding="utf-8") as output_file:
-        output_file.write("\n" + content)
+        output_file.write("\n\n" + content)
 
 
 def append_jupyter_notebook(file_path: Path, output_md: Path) -> None:
@@ -72,7 +72,7 @@ def append_jupyter_notebook(file_path: Path, output_md: Path) -> None:
             (output_dir / filename).write_bytes(data)
 
     with output_md.open("a", encoding="utf-8") as f:
-        f.write("\n" + body_cleaned)
+        f.write("\n\n" + body_cleaned)
 
 if __name__ == "__main__":
     resources = [

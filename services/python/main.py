@@ -13,7 +13,7 @@ def convert_and_merge(notebook_paths: list[Path], output_md: Path) -> None:
         config={
             "ExtractOutputPreprocessor": {
                 "enabled": True,
-                "output_filename_template": "images/{unique_key}_{cell_index}_{index}.png",  # noqa: E501
+                "output_filename_template": "files/jupyter/images/{unique_key}_{cell_index}_{index}.png",  # noqa: E501
             }
         }
     )

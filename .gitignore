@@ -6,6 +6,7 @@ test.md
 
 # Data
 db/
+!db/chinook.db
 
 # Apache Superset
 services/superset/data/

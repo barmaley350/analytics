@@ -87,8 +87,3 @@ services:
   #   # volumes:
   #   #   - ./services/clickhouse/data/db:/var/lib/clickhouse:rw
   #   #   - ./services/clickhouse/data/log:/var/log/clickhouse-server:rw
-  #   env_file:
-  #     - ./services/clickhouse/.env
-  #   restart: unless-stopped
-  #   networks:
-  #     - internal-net

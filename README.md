@@ -28,7 +28,7 @@
 | Apache Superset | [http://localhost:8088/](http://localhost:8088/) |  |
 | PostgreSQL | [http://localhost:5432/](http://localhost:5432/) |  |
 | ClickHouse | [http://localhost:8123/](http://localhost:8123/) |  |
-| smtp4dev | [http://localhost:5000/](http://localhost:5000/) | Также доступы `POP3` -`2525:25` и `110:110`|
+| smtp4dev | [http://localhost:5000/](http://localhost:5000/) | Также доступны `POP3` -`2525:25` и `110:110`|
 
 # Демо данные
 ## Используемые `datasets`

@@ -53,9 +53,23 @@ services:
     networks:
       - internal-net
 
+  # ----------------------------------------------------------------------------
+  # smtp4dev
+  # ----------------------------------------------------------------------------
+  service.smtp4dev:
+    image: rnwood/smtp4dev:prerelease
+    expose:
+      - 5000:80
+      - 2525:25
+      - 110:110
+    volumes:
+      - smtp4dev-volume:/smtp4dev
+    restart: unless-stopped
+    networks:
+      - internal-net  
 
   # ----------------------------------------------------------------------------
-  # database
+  # ClickHouse
   # ----------------------------------------------------------------------------
   service.db_clickhouse:
     image: clickhouse/clickhouse-server:latest

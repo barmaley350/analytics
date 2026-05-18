@@ -1,0 +1,87 @@
+-- Создаём базу данных (если её нет)
+CREATE DATABASE IF NOT EXISTS liquor;
+
+-- Создаём таблицу (если её нет)
+CREATE TABLE IF NOT EXISTS liquor.liquor_sales (
+    Invoice_Item_Number String,
+    Invoice_Date Date,
+    Store_Number UInt32,
+    Store_Name String,
+    Address String,
+    City String,
+    Zip_Code String,
+    Store_Location String,
+    County_Number UInt32,
+    County String,
+    Category UInt32,
+    Category_Name String,
+    Vendor_Number UInt32,
+    Vendor_Name String,
+    Item_Number Nullable(UInt32),
+    Item_Description String,
+    Pack UInt32,
+    Bottle_Volume_ml UInt32,
+    State_Bottle_Cost Decimal(10,2),
+    State_Bottle_Retail Decimal(10,2),
+    Bottles_Sold UInt32,
+    Sale_Dollars Decimal(12,2),
+    Volume_Sold_Liters Decimal(10,3),
+    Volume_Sold_Gallons Decimal(10,3)
+) ENGINE = MergeTree()
+ORDER BY (Invoice_Date, Store_Number);
+
+-- Вставляем данные из CSV с обработкой ошибок
+INSERT INTO liquor.liquor_sales
+SELECT
+    "Invoice/Item Number" AS Invoice_Item_Number,
+    parseDateTimeBestEffortUS(Date) AS Invoice_Date,
+    "Store Number" AS Store_Number,
+    "Store Name" AS Store_Name,
+    Address,
+    City,
+    "Zip Code" AS Zip_Code,
+    "Store Location" AS Store_Location,
+    "County Number" AS County_Number,
+    County,
+    Category,
+    "Category Name" AS Category_Name,
+    "Vendor Number" AS Vendor_Number,
+    "Vendor Name" AS Vendor_Name,
+    toUInt32OrNull("Item Number") AS Item_Number,
+    "Item Description" AS Item_Description,
+    Pack,
+    "Bottle Volume (ml)" AS Bottle_Volume_ml,
+    "State Bottle Cost" AS State_Bottle_Cost,
+    "State Bottle Retail" AS State_Bottle_Retail,
+    "Bottles Sold" AS Bottles_Sold,
+    "Sale (Dollars)" AS Sale_Dollars,
+    "Volume Sold (Liters)" AS Volume_Sold_Liters,
+    "Volume Sold (Gallons)" AS Volume_Sold_Gallons
+FROM file(
+    'Liquor_Sales.csv',
+    'CSVWithNames',
+    '"Invoice/Item Number" String,
+     Date String,
+     "Store Number" UInt32,
+     "Store Name" String,
+     Address String,
+     City String,
+     "Zip Code" String,
+     "Store Location" String,
+     "County Number" UInt32,
+     County String,
+     Category UInt32,
+     "Category Name" String,
+     "Vendor Number" UInt32,
+     "Vendor Name" String,
+     "Item Number" String,
+     "Item Description" String,
+     Pack UInt32,
+     "Bottle Volume (ml)" UInt32,
+     "State Bottle Cost" Decimal(10,2),
+     "State Bottle Retail" Decimal(10,2),
+     "Bottles Sold" UInt32,
+     "Sale (Dollars)" Decimal(12,2),
+     "Volume Sold (Liters)" Decimal(10,3),
+     "Volume Sold (Gallons)" Decimal(10,3)'
+);

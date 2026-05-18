@@ -80,7 +80,11 @@ services:
       - ./services/clickhouse/.env
     volumes:
       - analytics-clickhouse-data-volume:/var/lib/clickhouse
-      - analytics-clickhouse-logs-volume:/var/log/clickhouse-server   
+      - analytics-clickhouse-logs-volume:/var/log/clickhouse-server
+      - ./db:/var/lib/clickhouse/user_files
+      - ./services/clickhouse/sql:/sql-files   
+      - ./services/clickhouse/data/config/config.xml:/etc/clickhouse-server/config.d/config.xml
+      - ./services/clickhouse/data/config/users.xml:/etc/clickhouse-server/config.d/users.xml       
     restart: unless-stopped
     networks:
       - internal-net      

@@ -3,10 +3,12 @@ __pycache__
 run.sh
 test.md
 .env
+dell.txt
+dell.sql
 
 # Data
-db/
-!db/chinook.db
+datasets/
+!datasets/chinook.db
 
 # Apache Superset
 services/superset/data/
@@ -17,3 +19,6 @@ services/clickhouse/data/log/
 
 # PostgreSQL
 services/postgres/db/
+
+# JupyterLab
+.ipynb_checkpoints

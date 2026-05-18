@@ -18,7 +18,7 @@ services:
       - 8888:8888      
     volumes:
       - ./services/jupyter/notebooks:/home/jovyan/work/notebooks
-      - ./db:/home/jovyan/work/db
+      - ./datasets:/home/jovyan/work/db
     restart: unless-stopped
     networks:
       - internal-net
@@ -34,7 +34,7 @@ services:
       - 8088:8088
     volumes:
       - ./services/superset/data:/app/superset_home
-      - ./db:/app/database
+      - ./datasets:/app/database
     restart: unless-stopped
     networks:
       - internal-net
@@ -81,7 +81,7 @@ services:
     volumes:
       - analytics-clickhouse-data-volume:/var/lib/clickhouse
       - analytics-clickhouse-logs-volume:/var/log/clickhouse-server
-      - ./db:/var/lib/clickhouse/user_files
+      - ./datasets:/var/lib/clickhouse/user_files
       - ./services/clickhouse/sql:/sql-files   
       - ./services/clickhouse/data/config/config.xml:/etc/clickhouse-server/config.d/config.xml
       - ./services/clickhouse/data/config/users.xml:/etc/clickhouse-server/config.d/users.xml       

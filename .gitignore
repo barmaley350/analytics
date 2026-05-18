@@ -7,7 +7,7 @@ dell.txt
 dell.sql
 
 # Data
-datasets/
+datasets/*
 !datasets/chinook.db
 
 # Apache Superset

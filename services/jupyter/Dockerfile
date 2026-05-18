@@ -10,9 +10,31 @@ RUN pip install uv --no-cache-dir
 
 USER jovyan
 
-RUN uv pip install --system psycopg2-binary matplotlib pandas tabulate openpyxl
+RUN uv pip install --system \ 
+        psycopg2-binary \ 
+        matplotlib \ 
+        pandas \ 
+        tabulate \
+        openpyxl \
+        clickhouse-connect \
+        ipython-sql \
+        fg-data-profiling \ 
+        ipywidgets
+
+RUN uv pip install --system \ 
+        "dask[complete]"
+
+RUN uv pip install --system \ 
+        jupyter-resource-usage
+
+RUN uv pip install --system \ 
+        memory_profiler        
+
+RUN uv pip install --system \ 
+        polars
 
 COPY ./services/jupyter/jupyter_notebook_config.py /home/jovyan/.jupyter/
+
 
 
 # #USER jovyan

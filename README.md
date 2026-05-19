@@ -25,23 +25,6 @@
 ## Как запустить
 `docker compose  up --build`
 
-## Дополнительные источники демо данных
-
-| Url | Описание | 
-|---------|-----------|
-| https://the-examples-book.com/projects/data-sets/ | Базовые наборы |
-| https://clickhouse.com/docs/ru/getting-started/example-datasets | Big Data |
-| https://www.kaggle.com/datasets/ | Много разных и интересных datasets |
-
-## Дополнительная информация
-
-| Файл | Url | Описание | 
-|---------|-----------|---------------|
-| SQL BASE | [SQL BASE (.md)](./md/SQL_THEORY.md) | Базовые основы SQL |
-| SQL EXAMPLES | [SQL EXAMPLES (.md)](./md/SQL.md) | `md` версия для изучения |
-| SQL EXAMPLES | [SQL EXAMPLES (.ipynb)](./services/jupyter/data/examples.ipynb) | `ipynb` версия для изучения |
-| SQLBOOK.md | [SQLBOOK.pdf](./files/SQLBOOK.pdf) | pdf версия для скачивания |
-
 ## Визуализация
 
 |  |  |  | 

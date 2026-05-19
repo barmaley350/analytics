@@ -1,4 +1,3 @@
-
 <style>
 table { width: 100%; border-collapse: collapse; }
 th, td { padding: 12px; border: 1px solid #ddd; text-align: left; }
@@ -39,20 +38,13 @@ th, td { padding: 12px; border: 1px solid #ddd; text-align: left; }
 | ClickHouse | [http://localhost:8123/](http://localhost:8123/) |  |
 | smtp4dev | [http://localhost:5000/](http://localhost:5000/) | Также доступны `POP3` -`2525:25` и `110:110`|
 
-# Демо данные
-## Используемые `datasets`
-| Url | Описание | 
-|---------|-----------|
-| [Chinook](https://www.kaggle.com/datasets/ranasabrii/chinook) | База данных Chinook представляет собой цифровой медиамагазин, включающий в себя таблицы с информацией об исполнителях, альбомах, медиафайлах, счетах и клиентах. |
-| [Kaggle / Superstore Sales Dataset](https://www.kaggle.com/datasets/rohitsahoo/sales-forecasting) | Набор данных о розничных продажах в глобальном супермаркете за 4 года. |
-| [Цены на недвижимость в Великобритании](https://clickhouse.com/docs/ru/getting-started/example-datasets/uk-price-paid) | Этот набор данных содержит сведения о ценах сделок с объектами недвижимости в Англии и Уэльсе. Данные доступны с 1995 года, а размер набора данных в несжатом виде составляет около 4 GiB (в ClickHouse он занимает всего около 278 MiB). |
-
-## Дополнительные источники 
+# Дополнительные источники демо данных
 
 | Url | Описание | 
 |---------|-----------|
 | https://the-examples-book.com/projects/data-sets/ | Базовые наборы |
 | https://clickhouse.com/docs/ru/getting-started/example-datasets | Big Data |
+| https://www.kaggle.com/datasets/ | Много разных и интересных datasets |
 
 # Дополнительная информация
 

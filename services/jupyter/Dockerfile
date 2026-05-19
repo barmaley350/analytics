@@ -21,17 +21,17 @@ RUN uv pip install --system \
         fg-data-profiling \ 
         ipywidgets
 
-RUN uv pip install --system \ 
-        "dask[complete]"
+RUN uv pip install --system "dask[complete]"
 
-RUN uv pip install --system \ 
-        jupyter-resource-usage
+RUN uv pip install --system jupyter-resource-usage
 
-RUN uv pip install --system \ 
-        memory_profiler        
+RUN uv pip install --system memory_profiler        
 
-RUN uv pip install --system \ 
-        polars
+RUN uv pip install --system polars
+
+RUN uv pip install --system "chdb[pandas,pyarrow]"
+
+# RUN uv pip install --system chdb-ds
 
 COPY ./services/jupyter/jupyter_notebook_config.py /home/jovyan/.jupyter/
 

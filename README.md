@@ -1,3 +1,15 @@
+<style>
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+th, td {
+    padding: 8px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+</style>
+
 # Краткое описание
 Приводится пример анализа данных на основе датасета 
 [https://www.kaggle.com/datasets/ekibee/car-sales-information](https://www.kaggle.com/datasets/ekibee/car-sales-information)

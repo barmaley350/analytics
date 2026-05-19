@@ -1,6 +1,6 @@
 # Краткое описание
 Приводится пример анализа данных на основе датасета 
-`https://www.kaggle.com/datasets/ekibee/car-sales-information`
+[https://www.kaggle.com/datasets/ekibee/car-sales-information](https://www.kaggle.com/datasets/ekibee/car-sales-information)
 
 Данный датасет содержит информацию о продаже машин за определенные годы
 по определенным регионам. Датасет содежит `1 294 757` записей и `19` параметров.

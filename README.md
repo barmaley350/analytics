@@ -1,8 +1,3 @@
-<style>
-table { width: 100%; border-collapse: collapse; }
-th, td { padding: 12px; border: 1px solid #ddd; text-align: left; }
-</style>
-
 # Краткое описание
 Приводится пример анализа данных на основе датасета 
 [https://www.kaggle.com/datasets/ekibee/car-sales-information](https://www.kaggle.com/datasets/ekibee/car-sales-information)
@@ -36,7 +31,7 @@ th, td { padding: 12px; border: 1px solid #ddd; text-align: left; }
 | Apache Superset | [http://localhost:8088/](http://localhost:8088/) |  |
 | PostgreSQL | [http://localhost:5432/](http://localhost:5432/) |  |
 | ClickHouse | [http://localhost:8123/](http://localhost:8123/) |  |
-| smtp4dev | [http://localhost:5000/](http://localhost:5000/) | Также доступны `POP3` -`2525:25` и `110:110`|
+| smtp4dev | [http://localhost:5000/](http://localhost:5000/) | |
 
 # Дополнительные источники демо данных
 

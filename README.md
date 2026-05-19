@@ -20,6 +20,14 @@
 3. **Визуализация данных**
     - JupyterLab
     - Apache Superset
+| Этап | Сервис | Url | Описание | 
+|---------||---------|-----------|---------------|
+| `подготовка` | python3 |  |
+| `data profilling`| JupyterLab | [http://localhost:8888/](http://localhost:8888/) |  |
+| | Apache Superset | [http://localhost:8088/](http://localhost:8088/) |  |
+| | PostgreSQL | [http://localhost:5432/](http://localhost:5432/) |  |
+| | ClickHouse | [http://localhost:8123/](http://localhost:8123/) |  |
+| | smtp4dev | [http://localhost:5000/](http://localhost:5000/) | |
 
 # Как запустить
 `docker compose  up --build`

@@ -76,6 +76,7 @@ services:
     image: clickhouse/clickhouse-server:latest
     ports:
       - "8123:8123"
+      - "9000:9000"
     env_file:
       - ./services/clickhouse/.env
     volumes:
@@ -83,8 +84,8 @@ services:
       - analytics-clickhouse-logs-volume:/var/log/clickhouse-server
       - ./datasets:/var/lib/clickhouse/user_files
       - ./services/clickhouse/sql:/sql-files   
-      - ./services/clickhouse/data/config/config.xml:/etc/clickhouse-server/config.d/config.xml
-      - ./services/clickhouse/data/config/users.xml:/etc/clickhouse-server/config.d/users.xml       
+      # - ./services/clickhouse/data/config/config.xml:/etc/clickhouse-server/config.d/config.xml
+      # - ./services/clickhouse/data/config/users.xml:/etc/clickhouse-server/config.d/users.xml       
     restart: unless-stopped
     networks:
       - internal-net      

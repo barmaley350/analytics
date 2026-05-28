@@ -153,19 +153,7 @@ info_df
 
 
 <div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
 
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -232,19 +220,7 @@ rez_styled
 
 
 
-<style type="text/css">
-#T_9500a_row0_col4, #T_9500a_row1_col4, #T_9500a_row2_col4, #T_9500a_row9_col4, #T_9500a_row13_col4, #T_9500a_row14_col4, #T_9500a_row15_col4, #T_9500a_row17_col4 {
-  background-color: transparent;
-}
-#T_9500a_row3_col4, #T_9500a_row4_col4, #T_9500a_row7_col4, #T_9500a_row8_col4, #T_9500a_row16_col4 {
-  color: black;
-  background-color: yellow;
-}
-#T_9500a_row5_col4, #T_9500a_row6_col4, #T_9500a_row10_col4, #T_9500a_row11_col4, #T_9500a_row12_col4 {
-  color: black;
-  background-color: #ffcccc;
-}
-</style>
+
 <table id="T_9500a">
   <thead>
     <tr>
@@ -426,19 +402,7 @@ null_dict_df
 
 
 <div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
 
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -523,19 +487,7 @@ with pd.option_context(
 
 
 <div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
 
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -661,19 +613,7 @@ dfs[0].sample(5)
 
 
 <div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
 
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -839,19 +779,7 @@ with pd.option_context(
 
 
 <div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
 
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -1042,19 +970,7 @@ with pd.option_context(
 
 
 <div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
 
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">

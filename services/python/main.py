@@ -6,7 +6,6 @@ from pathlib import Path
 import nbformat
 from nbconvert import MarkdownExporter
 
-
 # def convert_and_merge(notebook_paths: list[Path], output_md: Path) -> None:
 #     """Convert notebooks to markdown and merge them."""
 #     markdown_exporter = MarkdownExporter(
@@ -37,8 +36,10 @@ from nbconvert import MarkdownExporter
 #     with output_md.open("w", encoding="utf-8") as f:
 #         f.write("\n".join(full_content))
 
+
 def create_empty_md(output_md: Path):
-    output_md.write_text('', encoding='utf-8')
+    output_md.write_text("", encoding="utf-8")
+
 
 def append_md(file_path: Path, output_md: Path):
     with file_path.open("r", encoding="utf-8") as input_file:
@@ -78,6 +79,7 @@ def append_jupyter_notebook(file_path: Path, output_md: Path) -> None:
 
     with output_md.open("a", encoding="utf-8") as f:
         f.write("\n\n" + body_cleaned)
+
 
 if __name__ == "__main__":
     resources = [

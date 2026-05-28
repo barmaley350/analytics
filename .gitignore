@@ -5,7 +5,8 @@ test.md
 .env
 dell.txt
 dell.sql
-
+# Clickhouse local
+clickhouse
 # Data
 datasets/*
 !datasets/chinook.db

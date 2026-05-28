@@ -32,6 +32,7 @@ RUN uv pip install --system polars
 RUN uv pip install --system "chdb[pandas,pyarrow]"
 
 # RUN uv pip install --system chdb-ds
+RUN uv pip install --system ipython-autotime
 
 COPY ./services/jupyter/jupyter_notebook_config.py /home/jovyan/.jupyter/
 

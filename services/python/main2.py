@@ -20,11 +20,12 @@ def append_md(file_path: Path, output_md: Path):
 
 
 def append_jupyter_notebook(file_path: Path, output_md: Path) -> None:
+    output_filename_template = f"files/jupyter/images/{file_path.stem}_{{unique_key}}_{{cell_index}}_{{index}}.png"
     markdown_exporter = MarkdownExporter(
         config={
             "ExtractOutputPreprocessor": {
                 "enabled": True,
-                "output_filename_template": "files/jupyter/images/{unique_key}_{cell_index}_{index}.png",  # noqa: E501
+                "output_filename_template": output_filename_template,  # noqa: E501
             }
         }
     )

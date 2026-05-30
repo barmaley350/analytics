@@ -703,7 +703,7 @@ plt.show()
 
 
     
-![png](files/jupyter/images/output_17_0.png)
+![png](files/jupyter/images/cars2_cc_output_17_0.png)
     
 
 
@@ -726,7 +726,7 @@ plt.show()
 
 
     
-![png](files/jupyter/images/output_18_0.png)
+![png](files/jupyter/images/cars2_cc_output_18_0.png)
     
 
 
@@ -1522,7 +1522,7 @@ plt.show()
 
 
     
-![png](files/jupyter/images/output_28_0.png)
+![png](files/jupyter/images/cars2_cc_output_28_0.png)
     
 
 
@@ -1548,7 +1548,7 @@ plt.show()
 
 
     
-![png](files/jupyter/images/output_29_0.png)
+![png](files/jupyter/images/cars2_cc_output_29_0.png)
     
 
 
@@ -1591,19 +1591,19 @@ plt.show()
 
 
     
-![png](files/jupyter/images/output_30_0.png)
+![png](files/jupyter/images/cars2_cc_output_30_0.png)
     
 
 
 
     
-![png](files/jupyter/images/output_30_1.png)
+![png](files/jupyter/images/cars2_cc_output_30_1.png)
     
 
 
 
     
-![png](files/jupyter/images/output_30_2.png)
+![png](files/jupyter/images/cars2_cc_output_30_2.png)
     
 
 

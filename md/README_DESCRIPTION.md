@@ -1,3 +1,4 @@
+# Описание
 ## Краткое описание
 Приводится пример анализа данных на основе датасета 
 [https://www.kaggle.com/datasets/ekibee/car-sales-information](https://www.kaggle.com/datasets/ekibee/car-sales-information)
@@ -15,7 +16,7 @@
 
 | Этап | Сервис | Url | Описание | 
 |---------|---------|-----------|---------------|
-| `подготовка` | python3 |  | |
+| `подготовка` | python3, clickhouse-local |  | |
 | `data profilling` `визуализация`| JupyterLab | [http://localhost:8888/](http://localhost:8888/) | `Data profiling` — это процесс исследования и анализа наборов данных для понимания их структуры, содержания и качества. Цель — получить полное представление о данных перед их использованием в анализе, машинном обучении или интеграции.  |
 | `визуализация` | Apache Superset | [http://localhost:8088/](http://localhost:8088/) | `Apache Superset` — это бесплатная (open‑source) платформа для исследования и визуализации данных с веб‑интерфейсом. Изначально разработана в Airbnb, затем передана в Apache Software Foundation. |
 | `хранение` | ClickHouse | [http://localhost:8123/](http://localhost:8123/) | `ClickHouse` — это колоночная (столбцовая) система управления базами данных (СУБД) с открытым исходным кодом (Apache License 2.0), разработанная в Яндексе для аналитики больших объёмов данных в реальном времени. |
@@ -24,11 +25,3 @@
 
 ## Как запустить
 `docker compose  up --build`
-
-## Визуализация
-
-|  |  |  | 
-|---------|-----------|---------------|
-| ![img_1](./files/dashboards/1.jpg) | ![img_1](./files/dashboards/1.jpg) | ![img_1](./files/dashboards/1.jpg) |
-|  |  |
-|  |  |

@@ -23,33 +23,33 @@ volumes:
 
 ## Создание структуры таблицы из файла
 
-Добавить данные из файла в таблицу можно двумя способами - из локального файла который находится на локальном компьютере либо из файла который смонтирован в `docker`. В первом случае используется относительный пусть к локальному файлу `./datasets/raw_data/liquor/Liquor_Sales.csv`. Во втором случае относительный путь к файлу в рамках `docker` - `./raw_data/liquor/Liquor_Sales.csv`. Файлы в `docker` находятся в директории `/var/lib/clickhouse/user_files`
+Добавить данные из файла в таблицу можно двумя способами - из локального файла который находится на локальном компьютере либо из файла который смонтирован в `docker`. В первом случае используется относительный пусть к локальному файлу `./datasets/raw_data/cars/cars_sales.csv`. Во втором случае относительный путь к файлу в рамках `docker` - `./raw_data/cars/cars_sales.csv`. Файлы в `docker` находятся в директории `/var/lib/clickhouse/user_files`
 
 Для создания структуры таблицы из файла нужно выполнить следующую последовательность команд. Все команды выполняются на локальном компьютере.
 
 ### Создание базы данных если не существует.
 ```
-clickhouse-client -q "CREATE DATABASE IF NOT EXISTS liquor;"
+clickhouse-client -q "CREATE DATABASE IF NOT EXISTS cars;"
 ```
 ### Удаление таблицы если существует
 ```
-clickhouse-client -q "DROP TABLE IF EXISTS liquor.liquor2;"
+clickhouse-client -q "DROP TABLE IF EXISTS cars.cars_sales;"
 ```
 ### Создание структуры таблицы если не существует (через `docker`) 
 ```
-clickhouse-client -q "CREATE TABLE IF NOT EXISTS liquor.liquor2 ENGINE = MergeTree ORDER BY tuple() EMPTY AS SELECT * FROM file('./raw_data/liquor/Liquor_Sales.csv');"
+clickhouse-client -q "CREATE TABLE IF NOT EXISTS cars.cars_sales ENGINE = MergeTree ORDER BY tuple() EMPTY AS SELECT * FROM file('./raw_data/cars/cars_sales.csv');"
 ```
 ### Добавление данных в таблицу (локальный файл)
 ```
-clickhouse-client -q "INSERT INTO liquor.liquor2 FORMAT CSVWithNames" < ./datasets/raw_data/liquor/Liquor_Sales.csv
+clickhouse-client -q "INSERT INTO cars.cars_sales FORMAT CSVWithNames" < ./datasets/raw_data/cars/cars_sales.csv
 ```
 ```
-45.66s user 9.42s system 92% cpu 59.322 total
+5.55s user 4.89s system 46% cpu 22.242 total
 ```
 ### Добавление данных в таблицу (через `docker`)
 ```
-clickhouse-client -q "INSERT INTO liquor.liquor2 SELECT * FROM file('./raw_data/liquor/Liquor_Sales.csv', CSVWithNames)"
+clickhouse-client -q "INSERT INTO cars.cars_sales SELECT * FROM file('./raw_data/cars/cars_sales.csv', CSVWithNames)"
 ```
 ```
-0.09s user 0.07s system 0% cpu 22.743 total
+0.05s user 0.03s system 1% cpu 7.224 total
 ```

@@ -2,54 +2,64 @@ DROP DATABASE IF EXISTS cars;
 
 CREATE DATABASE IF NOT EXISTS cars;
 
-CREATE TABLE IF NOT EXISTS cars.car_sales (
+CREATE TABLE IF NOT EXISTS cars.cars_sales (
     brand Nullable(String),
     name Nullable(String),
     bodyType Nullable(String),
-    color Nullable(String),
-    fuelType Nullable(String),
-    year Nullable(UInt32),
+    color LowCardinality(Nullable(String)),
+    fuelType LowCardinality(Nullable(String)),
+    year Nullable(UInt16),
     mileage Nullable(UInt32),
-    transmission Nullable(String),
+    transmission LowCardinality(Nullable(String)),
     power Nullable(UInt16),
     price UInt32,
-    vehicleConfiguration Nullable(String),
-    engineName Nullable(String),
-    engineDisplacement Nullable(Float64),
+    vehicleConfiguration LowCardinality(Nullable(String)),
+    has_awd Nullable(Bool),
+    engineName LowCardinality(Nullable(String)),
+    engineVolume Nullable(Float32),
+    -- engineDisplacement_type Nullable(String),
     date Date,
-    location Nullable(String),
-    link Nullable(String),
-    description Nullable(String),
+    location LowCardinality(Nullable(String)),
+    -- link Nullable(String),
+    -- description Nullable(String),
     parse_date DateTime
 )
 ENGINE = MergeTree()
 ORDER BY (brand, date, parse_date)
 SETTINGS allow_nullable_key = 1;
 
-INSERT INTO cars.car_sales
+INSERT INTO cars.cars_sales
 SELECT
     nullIf(brand, '') as brand,
     nullIf(name, '') as name,
     nullIf(bodyType, '') as bodyType,
     nullIf(color, '') as color,
     nullIf(fuelType, '') as fuelType,
-    toUInt32OrNull(toString(toFloat64OrNull(year))) as year,
-    toUInt32OrNull(toString(toFloat64OrNull(mileage))) as mileage,
-    nullIf(transmission, '') as transmission,
-    toUInt32OrNull(toString(toFloat64OrNull(power))) as power,
+    toUInt16OrNull(toString(toFloat32OrNull(year))) as year,
+    toUInt32OrNull(toString(toFloat32OrNull(mileage))) as mileage,
+    nullIf(replaceAll(transmission, 'Автомат', 'АКПП'),'') AS transmission,
+    toUInt32OrNull(toString(toFloat32OrNull(power))) as power,
     price,
     nullIf(vehicleConfiguration, '') as vehicleConfiguration,
+
+    if(
+        vehicleConfiguration IS NULL,
+        NULL,
+        vehicleConfiguration LIKE '%AWD%'
+    ) AS has_awd,
+
+
     nullIf(engineName, '') as engineName,
-    -- nullIf(engineDisplacement, '') as engineDisplacement,
-    toFloat64OrNull(extract(engineDisplacement, '\\d+\\.?\\d*')) as engineDisplacement,
+    toFloat32OrNull(extract(engineDisplacement, '\\d+\\.?\\d*')) as engineVolume,
+    -- nullIf(extract(engineDisplacement, '([A-Za-z]+)$'),'') AS engineDisplacement_type,
     parseDateTimeBestEffortUS(date) as date,
     nullIf(location, '') as location,
-    nullIf(link, '') as link,
-    nullIf(description, '') as description,
+    -- nullIf(link, '') as link,
+    -- nullIf(description, '') as description,
     parse_date
 FROM file(
-    '/var/lib/clickhouse/user_files/cars_sales.csv',
-    'CSV',
+    '/var/lib/clickhouse/user_files/raw_data/cars/cars_sales.csv',
+    'CSVWithNames',
     'brand String,
      name String,
      bodyType String,

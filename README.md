@@ -43,35 +43,6 @@
 | cars_sales.csv | 2.0G | 
 | cars_sales.parquet | 250M |
 
-Разница примерно в 4 раза.
-
-## Предварительный анализ
-### Структура файла
-```
-./clickhouse local -q "DESCRIBE TABLE file ('./datasets/raw_data/cars/cars_sales.parquet') FORMAT Markdown"
-```
-
-| name | type | default_type | default_expression | comment | codec_expression | ttl_expression |
-|:-|:-|:-|:-|:-|:-|:-|
-| brand | Nullable(String) |  |  |  |  |  |
-| name | Nullable(String) |  |  |  |  |  |
-| bodyType | Nullable(String) |  |  |  |  |  |
-| color | Nullable(String) |  |  |  |  |  |
-| fuelType | Nullable(String) |  |  |  |  |  |
-| year | Nullable(Float64) |  |  |  |  |  |
-| mileage | Nullable(Float64) |  |  |  |  |  |
-| transmission | Nullable(String) |  |  |  |  |  |
-| power | Nullable(Float64) |  |  |  |  |  |
-| price | Nullable(Int64) |  |  |  |  |  |
-| vehicleConfiguration | Nullable(String) |  |  |  |  |  |
-| engineName | Nullable(String) |  |  |  |  |  |
-| engineDisplacement | Nullable(String) |  |  |  |  |  |
-| date | Nullable(DateTime64(3, \'UTC\')) |  |  |  |  |  |
-| location | Nullable(String) |  |  |  |  |  |
-| link | Nullable(String) |  |  |  |  |  |
-| description | Nullable(String) |  |  |  |  |  |
-| parse_date | Nullable(DateTime64(3, \'UTC\')) |  |  |  |  |  |
-
 
 # Jupyter Notebook - ChDB 
 
@@ -83,7 +54,7 @@
 
     The autotime extension is already loaded. To reload it, use:
       %reload_ext autotime
-    time: 1.22 ms (started: 2026-05-26 08:29:52 +03:00)
+    time: 1 ms (started: 2026-05-31 10:25:00 +03:00)
 
 
 
@@ -93,8 +64,10 @@ import time
 start_time = time.perf_counter()
 ```
 
-    time: 335 μs (started: 2026-05-31 09:44:53 +03:00)
+    time: 449 μs (started: 2026-05-31 10:25:00 +03:00)
 
+
+## Подключаем модули
 
 
 ```python
@@ -112,8 +85,10 @@ from my_module.my_func import (
 
 ```
 
-    time: 517 μs (started: 2026-05-31 09:47:14 +03:00)
+    time: 415 μs (started: 2026-05-31 10:25:00 +03:00)
 
+
+## Загружаем файл
 
 
 ```python
@@ -133,8 +108,10 @@ else:
 dsf = ds.read_parquet(file)  # type: ignore
 ```
 
-    time: 853 μs (started: 2026-05-31 09:45:12 +03:00)
+    time: 872 μs (started: 2026-05-31 10:25:00 +03:00)
 
+
+## Выводим `describe` статистику по выборочным полям
 
 
 ```python
@@ -221,8 +198,10 @@ with pd.option_context(
 </div>
 
 
-    time: 281 ms (started: 2026-05-31 09:45:14 +03:00)
+    time: 260 ms (started: 2026-05-31 10:25:00 +03:00)
 
+
+## Получаем общее кол-во записей
 
 
 ```python
@@ -231,8 +210,10 @@ result = chdb.query(sql)
 rows_count = int(result.data())
 ```
 
-    time: 5.08 ms (started: 2026-05-31 10:14:55 +03:00)
+    time: 4.43 ms (started: 2026-05-31 10:25:01 +03:00)
 
+
+## Формируем отчет по типам, LowCardinality, Not Null, Null
 
 
 ```python
@@ -304,237 +285,237 @@ rez_styled
 
 
 
-<table id="T_c3799">
+<table id="T_b1831">
   <thead>
     <tr>
       <th class="blank level0" >&nbsp;</th>
-      <th id="T_c3799_level0_col0" class="col_heading level0 col0" >field</th>
-      <th id="T_c3799_level0_col1" class="col_heading level0 col1" >type</th>
-      <th id="T_c3799_level0_col2" class="col_heading level0 col2" >Uniq Count</th>
-      <th id="T_c3799_level0_col3" class="col_heading level0 col3" >Uniq Count %</th>
-      <th id="T_c3799_level0_col4" class="col_heading level0 col4" >Description Uniq</th>
-      <th id="T_c3799_level0_col5" class="col_heading level0 col5" >Non-Null Count</th>
-      <th id="T_c3799_level0_col6" class="col_heading level0 col6" >Null Count</th>
-      <th id="T_c3799_level0_col7" class="col_heading level0 col7" >Null Count %</th>
-      <th id="T_c3799_level0_col8" class="col_heading level0 col8" >Description Null</th>
+      <th id="T_b1831_level0_col0" class="col_heading level0 col0" >field</th>
+      <th id="T_b1831_level0_col1" class="col_heading level0 col1" >type</th>
+      <th id="T_b1831_level0_col2" class="col_heading level0 col2" >Uniq Count</th>
+      <th id="T_b1831_level0_col3" class="col_heading level0 col3" >Uniq Count %</th>
+      <th id="T_b1831_level0_col4" class="col_heading level0 col4" >Description Uniq</th>
+      <th id="T_b1831_level0_col5" class="col_heading level0 col5" >Non-Null Count</th>
+      <th id="T_b1831_level0_col6" class="col_heading level0 col6" >Null Count</th>
+      <th id="T_b1831_level0_col7" class="col_heading level0 col7" >Null Count %</th>
+      <th id="T_b1831_level0_col8" class="col_heading level0 col8" >Description Null</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <th id="T_c3799_level0_row0" class="row_heading level0 row0" >0</th>
-      <td id="T_c3799_row0_col0" class="data row0 col0" >brand</td>
-      <td id="T_c3799_row0_col1" class="data row0 col1" >Nullable(String)</td>
-      <td id="T_c3799_row0_col2" class="data row0 col2" >160</td>
-      <td id="T_c3799_row0_col3" class="data row0 col3" >0.01</td>
-      <td id="T_c3799_row0_col4" class="data row0 col4" >LowCardinality</td>
-      <td id="T_c3799_row0_col5" class="data row0 col5" >1294757</td>
-      <td id="T_c3799_row0_col6" class="data row0 col6" >0</td>
-      <td id="T_c3799_row0_col7" class="data row0 col7" >0.00</td>
-      <td id="T_c3799_row0_col8" class="data row0 col8" ></td>
+      <th id="T_b1831_level0_row0" class="row_heading level0 row0" >0</th>
+      <td id="T_b1831_row0_col0" class="data row0 col0" >brand</td>
+      <td id="T_b1831_row0_col1" class="data row0 col1" >Nullable(String)</td>
+      <td id="T_b1831_row0_col2" class="data row0 col2" >160</td>
+      <td id="T_b1831_row0_col3" class="data row0 col3" >0.01</td>
+      <td id="T_b1831_row0_col4" class="data row0 col4" >LowCardinality</td>
+      <td id="T_b1831_row0_col5" class="data row0 col5" >1294757</td>
+      <td id="T_b1831_row0_col6" class="data row0 col6" >0</td>
+      <td id="T_b1831_row0_col7" class="data row0 col7" >0.00</td>
+      <td id="T_b1831_row0_col8" class="data row0 col8" ></td>
     </tr>
     <tr>
-      <th id="T_c3799_level0_row1" class="row_heading level0 row1" >1</th>
-      <td id="T_c3799_row1_col0" class="data row1 col0" >name</td>
-      <td id="T_c3799_row1_col1" class="data row1 col1" >Nullable(String)</td>
-      <td id="T_c3799_row1_col2" class="data row1 col2" >2223</td>
-      <td id="T_c3799_row1_col3" class="data row1 col3" >0.17</td>
-      <td id="T_c3799_row1_col4" class="data row1 col4" >LowCardinality</td>
-      <td id="T_c3799_row1_col5" class="data row1 col5" >1294757</td>
-      <td id="T_c3799_row1_col6" class="data row1 col6" >0</td>
-      <td id="T_c3799_row1_col7" class="data row1 col7" >0.00</td>
-      <td id="T_c3799_row1_col8" class="data row1 col8" ></td>
+      <th id="T_b1831_level0_row1" class="row_heading level0 row1" >1</th>
+      <td id="T_b1831_row1_col0" class="data row1 col0" >name</td>
+      <td id="T_b1831_row1_col1" class="data row1 col1" >Nullable(String)</td>
+      <td id="T_b1831_row1_col2" class="data row1 col2" >2223</td>
+      <td id="T_b1831_row1_col3" class="data row1 col3" >0.17</td>
+      <td id="T_b1831_row1_col4" class="data row1 col4" >LowCardinality</td>
+      <td id="T_b1831_row1_col5" class="data row1 col5" >1294757</td>
+      <td id="T_b1831_row1_col6" class="data row1 col6" >0</td>
+      <td id="T_b1831_row1_col7" class="data row1 col7" >0.00</td>
+      <td id="T_b1831_row1_col8" class="data row1 col8" ></td>
     </tr>
     <tr>
-      <th id="T_c3799_level0_row2" class="row_heading level0 row2" >2</th>
-      <td id="T_c3799_row2_col0" class="data row2 col0" >bodyType</td>
-      <td id="T_c3799_row2_col1" class="data row2 col1" >Nullable(String)</td>
-      <td id="T_c3799_row2_col2" class="data row2 col2" >11</td>
-      <td id="T_c3799_row2_col3" class="data row2 col3" >0.00</td>
-      <td id="T_c3799_row2_col4" class="data row2 col4" >LowCardinality</td>
-      <td id="T_c3799_row2_col5" class="data row2 col5" >1294757</td>
-      <td id="T_c3799_row2_col6" class="data row2 col6" >0</td>
-      <td id="T_c3799_row2_col7" class="data row2 col7" >0.00</td>
-      <td id="T_c3799_row2_col8" class="data row2 col8" ></td>
+      <th id="T_b1831_level0_row2" class="row_heading level0 row2" >2</th>
+      <td id="T_b1831_row2_col0" class="data row2 col0" >bodyType</td>
+      <td id="T_b1831_row2_col1" class="data row2 col1" >Nullable(String)</td>
+      <td id="T_b1831_row2_col2" class="data row2 col2" >11</td>
+      <td id="T_b1831_row2_col3" class="data row2 col3" >0.00</td>
+      <td id="T_b1831_row2_col4" class="data row2 col4" >LowCardinality</td>
+      <td id="T_b1831_row2_col5" class="data row2 col5" >1294757</td>
+      <td id="T_b1831_row2_col6" class="data row2 col6" >0</td>
+      <td id="T_b1831_row2_col7" class="data row2 col7" >0.00</td>
+      <td id="T_b1831_row2_col8" class="data row2 col8" ></td>
     </tr>
     <tr>
-      <th id="T_c3799_level0_row3" class="row_heading level0 row3" >3</th>
-      <td id="T_c3799_row3_col0" class="data row3 col0" >color</td>
-      <td id="T_c3799_row3_col1" class="data row3 col1" >Nullable(String)</td>
-      <td id="T_c3799_row3_col2" class="data row3 col2" >16</td>
-      <td id="T_c3799_row3_col3" class="data row3 col3" >0.00</td>
-      <td id="T_c3799_row3_col4" class="data row3 col4" >LowCardinality</td>
-      <td id="T_c3799_row3_col5" class="data row3 col5" >1257029</td>
-      <td id="T_c3799_row3_col6" class="data row3 col6" >37728</td>
-      <td id="T_c3799_row3_col7" class="data row3 col7" >2.91</td>
-      <td id="T_c3799_row3_col8" class="data row3 col8" >Мало</td>
+      <th id="T_b1831_level0_row3" class="row_heading level0 row3" >3</th>
+      <td id="T_b1831_row3_col0" class="data row3 col0" >color</td>
+      <td id="T_b1831_row3_col1" class="data row3 col1" >Nullable(String)</td>
+      <td id="T_b1831_row3_col2" class="data row3 col2" >16</td>
+      <td id="T_b1831_row3_col3" class="data row3 col3" >0.00</td>
+      <td id="T_b1831_row3_col4" class="data row3 col4" >LowCardinality</td>
+      <td id="T_b1831_row3_col5" class="data row3 col5" >1257029</td>
+      <td id="T_b1831_row3_col6" class="data row3 col6" >37728</td>
+      <td id="T_b1831_row3_col7" class="data row3 col7" >2.91</td>
+      <td id="T_b1831_row3_col8" class="data row3 col8" >Мало</td>
     </tr>
     <tr>
-      <th id="T_c3799_level0_row4" class="row_heading level0 row4" >4</th>
-      <td id="T_c3799_row4_col0" class="data row4 col0" >fuelType</td>
-      <td id="T_c3799_row4_col1" class="data row4 col1" >Nullable(String)</td>
-      <td id="T_c3799_row4_col2" class="data row4 col2" >3</td>
-      <td id="T_c3799_row4_col3" class="data row4 col3" >0.00</td>
-      <td id="T_c3799_row4_col4" class="data row4 col4" >LowCardinality</td>
-      <td id="T_c3799_row4_col5" class="data row4 col5" >1289815</td>
-      <td id="T_c3799_row4_col6" class="data row4 col6" >4942</td>
-      <td id="T_c3799_row4_col7" class="data row4 col7" >0.38</td>
-      <td id="T_c3799_row4_col8" class="data row4 col8" >Мало</td>
+      <th id="T_b1831_level0_row4" class="row_heading level0 row4" >4</th>
+      <td id="T_b1831_row4_col0" class="data row4 col0" >fuelType</td>
+      <td id="T_b1831_row4_col1" class="data row4 col1" >Nullable(String)</td>
+      <td id="T_b1831_row4_col2" class="data row4 col2" >3</td>
+      <td id="T_b1831_row4_col3" class="data row4 col3" >0.00</td>
+      <td id="T_b1831_row4_col4" class="data row4 col4" >LowCardinality</td>
+      <td id="T_b1831_row4_col5" class="data row4 col5" >1289815</td>
+      <td id="T_b1831_row4_col6" class="data row4 col6" >4942</td>
+      <td id="T_b1831_row4_col7" class="data row4 col7" >0.38</td>
+      <td id="T_b1831_row4_col8" class="data row4 col8" >Мало</td>
     </tr>
     <tr>
-      <th id="T_c3799_level0_row5" class="row_heading level0 row5" >5</th>
-      <td id="T_c3799_row5_col0" class="data row5 col0" >year</td>
-      <td id="T_c3799_row5_col1" class="data row5 col1" >Nullable(Float64)</td>
-      <td id="T_c3799_row5_col2" class="data row5 col2" >78</td>
-      <td id="T_c3799_row5_col3" class="data row5 col3" >0.01</td>
-      <td id="T_c3799_row5_col4" class="data row5 col4" ></td>
-      <td id="T_c3799_row5_col5" class="data row5 col5" >724644</td>
-      <td id="T_c3799_row5_col6" class="data row5 col6" >570113</td>
-      <td id="T_c3799_row5_col7" class="data row5 col7" >44.03</td>
-      <td id="T_c3799_row5_col8" class="data row5 col8" >Много</td>
+      <th id="T_b1831_level0_row5" class="row_heading level0 row5" >5</th>
+      <td id="T_b1831_row5_col0" class="data row5 col0" >year</td>
+      <td id="T_b1831_row5_col1" class="data row5 col1" >Nullable(Float64)</td>
+      <td id="T_b1831_row5_col2" class="data row5 col2" >78</td>
+      <td id="T_b1831_row5_col3" class="data row5 col3" >0.01</td>
+      <td id="T_b1831_row5_col4" class="data row5 col4" ></td>
+      <td id="T_b1831_row5_col5" class="data row5 col5" >724644</td>
+      <td id="T_b1831_row5_col6" class="data row5 col6" >570113</td>
+      <td id="T_b1831_row5_col7" class="data row5 col7" >44.03</td>
+      <td id="T_b1831_row5_col8" class="data row5 col8" >Много</td>
     </tr>
     <tr>
-      <th id="T_c3799_level0_row6" class="row_heading level0 row6" >6</th>
-      <td id="T_c3799_row6_col0" class="data row6 col0" >mileage</td>
-      <td id="T_c3799_row6_col1" class="data row6 col1" >Nullable(Float64)</td>
-      <td id="T_c3799_row6_col2" class="data row6 col2" >821</td>
-      <td id="T_c3799_row6_col3" class="data row6 col3" >0.06</td>
-      <td id="T_c3799_row6_col4" class="data row6 col4" ></td>
-      <td id="T_c3799_row6_col5" class="data row6 col5" >771799</td>
-      <td id="T_c3799_row6_col6" class="data row6 col6" >522958</td>
-      <td id="T_c3799_row6_col7" class="data row6 col7" >40.39</td>
-      <td id="T_c3799_row6_col8" class="data row6 col8" >Много</td>
+      <th id="T_b1831_level0_row6" class="row_heading level0 row6" >6</th>
+      <td id="T_b1831_row6_col0" class="data row6 col0" >mileage</td>
+      <td id="T_b1831_row6_col1" class="data row6 col1" >Nullable(Float64)</td>
+      <td id="T_b1831_row6_col2" class="data row6 col2" >821</td>
+      <td id="T_b1831_row6_col3" class="data row6 col3" >0.06</td>
+      <td id="T_b1831_row6_col4" class="data row6 col4" ></td>
+      <td id="T_b1831_row6_col5" class="data row6 col5" >771799</td>
+      <td id="T_b1831_row6_col6" class="data row6 col6" >522958</td>
+      <td id="T_b1831_row6_col7" class="data row6 col7" >40.39</td>
+      <td id="T_b1831_row6_col8" class="data row6 col8" >Много</td>
     </tr>
     <tr>
-      <th id="T_c3799_level0_row7" class="row_heading level0 row7" >7</th>
-      <td id="T_c3799_row7_col0" class="data row7 col0" >transmission</td>
-      <td id="T_c3799_row7_col1" class="data row7 col1" >Nullable(String)</td>
-      <td id="T_c3799_row7_col2" class="data row7 col2" >5</td>
-      <td id="T_c3799_row7_col3" class="data row7 col3" >0.00</td>
-      <td id="T_c3799_row7_col4" class="data row7 col4" >LowCardinality</td>
-      <td id="T_c3799_row7_col5" class="data row7 col5" >1289563</td>
-      <td id="T_c3799_row7_col6" class="data row7 col6" >5194</td>
-      <td id="T_c3799_row7_col7" class="data row7 col7" >0.40</td>
-      <td id="T_c3799_row7_col8" class="data row7 col8" >Мало</td>
+      <th id="T_b1831_level0_row7" class="row_heading level0 row7" >7</th>
+      <td id="T_b1831_row7_col0" class="data row7 col0" >transmission</td>
+      <td id="T_b1831_row7_col1" class="data row7 col1" >Nullable(String)</td>
+      <td id="T_b1831_row7_col2" class="data row7 col2" >5</td>
+      <td id="T_b1831_row7_col3" class="data row7 col3" >0.00</td>
+      <td id="T_b1831_row7_col4" class="data row7 col4" >LowCardinality</td>
+      <td id="T_b1831_row7_col5" class="data row7 col5" >1289563</td>
+      <td id="T_b1831_row7_col6" class="data row7 col6" >5194</td>
+      <td id="T_b1831_row7_col7" class="data row7 col7" >0.40</td>
+      <td id="T_b1831_row7_col8" class="data row7 col8" >Мало</td>
     </tr>
     <tr>
-      <th id="T_c3799_level0_row8" class="row_heading level0 row8" >8</th>
-      <td id="T_c3799_row8_col0" class="data row8 col0" >power</td>
-      <td id="T_c3799_row8_col1" class="data row8 col1" >Nullable(Float64)</td>
-      <td id="T_c3799_row8_col2" class="data row8 col2" >541</td>
-      <td id="T_c3799_row8_col3" class="data row8 col3" >0.04</td>
-      <td id="T_c3799_row8_col4" class="data row8 col4" ></td>
-      <td id="T_c3799_row8_col5" class="data row8 col5" >1273353</td>
-      <td id="T_c3799_row8_col6" class="data row8 col6" >21404</td>
-      <td id="T_c3799_row8_col7" class="data row8 col7" >1.65</td>
-      <td id="T_c3799_row8_col8" class="data row8 col8" >Мало</td>
+      <th id="T_b1831_level0_row8" class="row_heading level0 row8" >8</th>
+      <td id="T_b1831_row8_col0" class="data row8 col0" >power</td>
+      <td id="T_b1831_row8_col1" class="data row8 col1" >Nullable(Float64)</td>
+      <td id="T_b1831_row8_col2" class="data row8 col2" >541</td>
+      <td id="T_b1831_row8_col3" class="data row8 col3" >0.04</td>
+      <td id="T_b1831_row8_col4" class="data row8 col4" ></td>
+      <td id="T_b1831_row8_col5" class="data row8 col5" >1273353</td>
+      <td id="T_b1831_row8_col6" class="data row8 col6" >21404</td>
+      <td id="T_b1831_row8_col7" class="data row8 col7" >1.65</td>
+      <td id="T_b1831_row8_col8" class="data row8 col8" >Мало</td>
     </tr>
     <tr>
-      <th id="T_c3799_level0_row9" class="row_heading level0 row9" >9</th>
-      <td id="T_c3799_row9_col0" class="data row9 col0" >price</td>
-      <td id="T_c3799_row9_col1" class="data row9 col1" >Nullable(Int64)</td>
-      <td id="T_c3799_row9_col2" class="data row9 col2" >35134</td>
-      <td id="T_c3799_row9_col3" class="data row9 col3" >2.71</td>
-      <td id="T_c3799_row9_col4" class="data row9 col4" ></td>
-      <td id="T_c3799_row9_col5" class="data row9 col5" >1294757</td>
-      <td id="T_c3799_row9_col6" class="data row9 col6" >0</td>
-      <td id="T_c3799_row9_col7" class="data row9 col7" >0.00</td>
-      <td id="T_c3799_row9_col8" class="data row9 col8" ></td>
+      <th id="T_b1831_level0_row9" class="row_heading level0 row9" >9</th>
+      <td id="T_b1831_row9_col0" class="data row9 col0" >price</td>
+      <td id="T_b1831_row9_col1" class="data row9 col1" >Nullable(Int64)</td>
+      <td id="T_b1831_row9_col2" class="data row9 col2" >35134</td>
+      <td id="T_b1831_row9_col3" class="data row9 col3" >2.71</td>
+      <td id="T_b1831_row9_col4" class="data row9 col4" ></td>
+      <td id="T_b1831_row9_col5" class="data row9 col5" >1294757</td>
+      <td id="T_b1831_row9_col6" class="data row9 col6" >0</td>
+      <td id="T_b1831_row9_col7" class="data row9 col7" >0.00</td>
+      <td id="T_b1831_row9_col8" class="data row9 col8" ></td>
     </tr>
     <tr>
-      <th id="T_c3799_level0_row10" class="row_heading level0 row10" >10</th>
-      <td id="T_c3799_row10_col0" class="data row10 col0" >vehicleConfiguration</td>
-      <td id="T_c3799_row10_col1" class="data row10 col1" >Nullable(String)</td>
-      <td id="T_c3799_row10_col2" class="data row10 col2" >25517</td>
-      <td id="T_c3799_row10_col3" class="data row10 col3" >1.97</td>
-      <td id="T_c3799_row10_col4" class="data row10 col4" >LowCardinality</td>
-      <td id="T_c3799_row10_col5" class="data row10 col5" >724647</td>
-      <td id="T_c3799_row10_col6" class="data row10 col6" >570110</td>
-      <td id="T_c3799_row10_col7" class="data row10 col7" >44.03</td>
-      <td id="T_c3799_row10_col8" class="data row10 col8" >Много</td>
+      <th id="T_b1831_level0_row10" class="row_heading level0 row10" >10</th>
+      <td id="T_b1831_row10_col0" class="data row10 col0" >vehicleConfiguration</td>
+      <td id="T_b1831_row10_col1" class="data row10 col1" >Nullable(String)</td>
+      <td id="T_b1831_row10_col2" class="data row10 col2" >25517</td>
+      <td id="T_b1831_row10_col3" class="data row10 col3" >1.97</td>
+      <td id="T_b1831_row10_col4" class="data row10 col4" >LowCardinality</td>
+      <td id="T_b1831_row10_col5" class="data row10 col5" >724647</td>
+      <td id="T_b1831_row10_col6" class="data row10 col6" >570110</td>
+      <td id="T_b1831_row10_col7" class="data row10 col7" >44.03</td>
+      <td id="T_b1831_row10_col8" class="data row10 col8" >Много</td>
     </tr>
     <tr>
-      <th id="T_c3799_level0_row11" class="row_heading level0 row11" >11</th>
-      <td id="T_c3799_row11_col0" class="data row11 col0" >engineName</td>
-      <td id="T_c3799_row11_col1" class="data row11 col1" >Nullable(String)</td>
-      <td id="T_c3799_row11_col2" class="data row11 col2" >4185</td>
-      <td id="T_c3799_row11_col3" class="data row11 col3" >0.32</td>
-      <td id="T_c3799_row11_col4" class="data row11 col4" >LowCardinality</td>
-      <td id="T_c3799_row11_col5" class="data row11 col5" >720976</td>
-      <td id="T_c3799_row11_col6" class="data row11 col6" >573781</td>
-      <td id="T_c3799_row11_col7" class="data row11 col7" >44.32</td>
-      <td id="T_c3799_row11_col8" class="data row11 col8" >Много</td>
+      <th id="T_b1831_level0_row11" class="row_heading level0 row11" >11</th>
+      <td id="T_b1831_row11_col0" class="data row11 col0" >engineName</td>
+      <td id="T_b1831_row11_col1" class="data row11 col1" >Nullable(String)</td>
+      <td id="T_b1831_row11_col2" class="data row11 col2" >4185</td>
+      <td id="T_b1831_row11_col3" class="data row11 col3" >0.32</td>
+      <td id="T_b1831_row11_col4" class="data row11 col4" >LowCardinality</td>
+      <td id="T_b1831_row11_col5" class="data row11 col5" >720976</td>
+      <td id="T_b1831_row11_col6" class="data row11 col6" >573781</td>
+      <td id="T_b1831_row11_col7" class="data row11 col7" >44.32</td>
+      <td id="T_b1831_row11_col8" class="data row11 col8" >Много</td>
     </tr>
     <tr>
-      <th id="T_c3799_level0_row12" class="row_heading level0 row12" >12</th>
-      <td id="T_c3799_row12_col0" class="data row12 col0" >engineDisplacement</td>
-      <td id="T_c3799_row12_col1" class="data row12 col1" >Nullable(String)</td>
-      <td id="T_c3799_row12_col2" class="data row12 col2" >69</td>
-      <td id="T_c3799_row12_col3" class="data row12 col3" >0.01</td>
-      <td id="T_c3799_row12_col4" class="data row12 col4" >LowCardinality</td>
-      <td id="T_c3799_row12_col5" class="data row12 col5" >717625</td>
-      <td id="T_c3799_row12_col6" class="data row12 col6" >577132</td>
-      <td id="T_c3799_row12_col7" class="data row12 col7" >44.57</td>
-      <td id="T_c3799_row12_col8" class="data row12 col8" >Много</td>
+      <th id="T_b1831_level0_row12" class="row_heading level0 row12" >12</th>
+      <td id="T_b1831_row12_col0" class="data row12 col0" >engineDisplacement</td>
+      <td id="T_b1831_row12_col1" class="data row12 col1" >Nullable(String)</td>
+      <td id="T_b1831_row12_col2" class="data row12 col2" >69</td>
+      <td id="T_b1831_row12_col3" class="data row12 col3" >0.01</td>
+      <td id="T_b1831_row12_col4" class="data row12 col4" >LowCardinality</td>
+      <td id="T_b1831_row12_col5" class="data row12 col5" >717625</td>
+      <td id="T_b1831_row12_col6" class="data row12 col6" >577132</td>
+      <td id="T_b1831_row12_col7" class="data row12 col7" >44.57</td>
+      <td id="T_b1831_row12_col8" class="data row12 col8" >Много</td>
     </tr>
     <tr>
-      <th id="T_c3799_level0_row13" class="row_heading level0 row13" >13</th>
-      <td id="T_c3799_row13_col0" class="data row13 col0" >date</td>
-      <td id="T_c3799_row13_col1" class="data row13 col1" >Nullable(DateTime64(3, 'UTC'))</td>
-      <td id="T_c3799_row13_col2" class="data row13 col2" >84</td>
-      <td id="T_c3799_row13_col3" class="data row13 col3" >0.01</td>
-      <td id="T_c3799_row13_col4" class="data row13 col4" ></td>
-      <td id="T_c3799_row13_col5" class="data row13 col5" >1294757</td>
-      <td id="T_c3799_row13_col6" class="data row13 col6" >0</td>
-      <td id="T_c3799_row13_col7" class="data row13 col7" >0.00</td>
-      <td id="T_c3799_row13_col8" class="data row13 col8" ></td>
+      <th id="T_b1831_level0_row13" class="row_heading level0 row13" >13</th>
+      <td id="T_b1831_row13_col0" class="data row13 col0" >date</td>
+      <td id="T_b1831_row13_col1" class="data row13 col1" >Nullable(DateTime64(3, 'UTC'))</td>
+      <td id="T_b1831_row13_col2" class="data row13 col2" >84</td>
+      <td id="T_b1831_row13_col3" class="data row13 col3" >0.01</td>
+      <td id="T_b1831_row13_col4" class="data row13 col4" ></td>
+      <td id="T_b1831_row13_col5" class="data row13 col5" >1294757</td>
+      <td id="T_b1831_row13_col6" class="data row13 col6" >0</td>
+      <td id="T_b1831_row13_col7" class="data row13 col7" >0.00</td>
+      <td id="T_b1831_row13_col8" class="data row13 col8" ></td>
     </tr>
     <tr>
-      <th id="T_c3799_level0_row14" class="row_heading level0 row14" >14</th>
-      <td id="T_c3799_row14_col0" class="data row14 col0" >location</td>
-      <td id="T_c3799_row14_col1" class="data row14 col1" >Nullable(String)</td>
-      <td id="T_c3799_row14_col2" class="data row14 col2" >3400</td>
-      <td id="T_c3799_row14_col3" class="data row14 col3" >0.26</td>
-      <td id="T_c3799_row14_col4" class="data row14 col4" >LowCardinality</td>
-      <td id="T_c3799_row14_col5" class="data row14 col5" >1294757</td>
-      <td id="T_c3799_row14_col6" class="data row14 col6" >0</td>
-      <td id="T_c3799_row14_col7" class="data row14 col7" >0.00</td>
-      <td id="T_c3799_row14_col8" class="data row14 col8" ></td>
+      <th id="T_b1831_level0_row14" class="row_heading level0 row14" >14</th>
+      <td id="T_b1831_row14_col0" class="data row14 col0" >location</td>
+      <td id="T_b1831_row14_col1" class="data row14 col1" >Nullable(String)</td>
+      <td id="T_b1831_row14_col2" class="data row14 col2" >3400</td>
+      <td id="T_b1831_row14_col3" class="data row14 col3" >0.26</td>
+      <td id="T_b1831_row14_col4" class="data row14 col4" >LowCardinality</td>
+      <td id="T_b1831_row14_col5" class="data row14 col5" >1294757</td>
+      <td id="T_b1831_row14_col6" class="data row14 col6" >0</td>
+      <td id="T_b1831_row14_col7" class="data row14 col7" >0.00</td>
+      <td id="T_b1831_row14_col8" class="data row14 col8" ></td>
     </tr>
     <tr>
-      <th id="T_c3799_level0_row15" class="row_heading level0 row15" >15</th>
-      <td id="T_c3799_row15_col0" class="data row15 col0" >link</td>
-      <td id="T_c3799_row15_col1" class="data row15 col1" >Nullable(String)</td>
-      <td id="T_c3799_row15_col2" class="data row15 col2" >951252</td>
-      <td id="T_c3799_row15_col3" class="data row15 col3" >73.47</td>
-      <td id="T_c3799_row15_col4" class="data row15 col4" ></td>
-      <td id="T_c3799_row15_col5" class="data row15 col5" >1294757</td>
-      <td id="T_c3799_row15_col6" class="data row15 col6" >0</td>
-      <td id="T_c3799_row15_col7" class="data row15 col7" >0.00</td>
-      <td id="T_c3799_row15_col8" class="data row15 col8" ></td>
+      <th id="T_b1831_level0_row15" class="row_heading level0 row15" >15</th>
+      <td id="T_b1831_row15_col0" class="data row15 col0" >link</td>
+      <td id="T_b1831_row15_col1" class="data row15 col1" >Nullable(String)</td>
+      <td id="T_b1831_row15_col2" class="data row15 col2" >951252</td>
+      <td id="T_b1831_row15_col3" class="data row15 col3" >73.47</td>
+      <td id="T_b1831_row15_col4" class="data row15 col4" ></td>
+      <td id="T_b1831_row15_col5" class="data row15 col5" >1294757</td>
+      <td id="T_b1831_row15_col6" class="data row15 col6" >0</td>
+      <td id="T_b1831_row15_col7" class="data row15 col7" >0.00</td>
+      <td id="T_b1831_row15_col8" class="data row15 col8" ></td>
     </tr>
     <tr>
-      <th id="T_c3799_level0_row16" class="row_heading level0 row16" >16</th>
-      <td id="T_c3799_row16_col0" class="data row16 col0" >description</td>
-      <td id="T_c3799_row16_col1" class="data row16 col1" >Nullable(String)</td>
-      <td id="T_c3799_row16_col2" class="data row16 col2" >892695</td>
-      <td id="T_c3799_row16_col3" class="data row16 col3" >68.95</td>
-      <td id="T_c3799_row16_col4" class="data row16 col4" ></td>
-      <td id="T_c3799_row16_col5" class="data row16 col5" >1254405</td>
-      <td id="T_c3799_row16_col6" class="data row16 col6" >40352</td>
-      <td id="T_c3799_row16_col7" class="data row16 col7" >3.12</td>
-      <td id="T_c3799_row16_col8" class="data row16 col8" >Мало</td>
+      <th id="T_b1831_level0_row16" class="row_heading level0 row16" >16</th>
+      <td id="T_b1831_row16_col0" class="data row16 col0" >description</td>
+      <td id="T_b1831_row16_col1" class="data row16 col1" >Nullable(String)</td>
+      <td id="T_b1831_row16_col2" class="data row16 col2" >892695</td>
+      <td id="T_b1831_row16_col3" class="data row16 col3" >68.95</td>
+      <td id="T_b1831_row16_col4" class="data row16 col4" ></td>
+      <td id="T_b1831_row16_col5" class="data row16 col5" >1254405</td>
+      <td id="T_b1831_row16_col6" class="data row16 col6" >40352</td>
+      <td id="T_b1831_row16_col7" class="data row16 col7" >3.12</td>
+      <td id="T_b1831_row16_col8" class="data row16 col8" >Мало</td>
     </tr>
     <tr>
-      <th id="T_c3799_level0_row17" class="row_heading level0 row17" >17</th>
-      <td id="T_c3799_row17_col0" class="data row17 col0" >parse_date</td>
-      <td id="T_c3799_row17_col1" class="data row17 col1" >Nullable(DateTime64(3, 'UTC'))</td>
-      <td id="T_c3799_row17_col2" class="data row17 col2" >817</td>
-      <td id="T_c3799_row17_col3" class="data row17 col3" >0.06</td>
-      <td id="T_c3799_row17_col4" class="data row17 col4" ></td>
-      <td id="T_c3799_row17_col5" class="data row17 col5" >1294757</td>
-      <td id="T_c3799_row17_col6" class="data row17 col6" >0</td>
-      <td id="T_c3799_row17_col7" class="data row17 col7" >0.00</td>
-      <td id="T_c3799_row17_col8" class="data row17 col8" ></td>
+      <th id="T_b1831_level0_row17" class="row_heading level0 row17" >17</th>
+      <td id="T_b1831_row17_col0" class="data row17 col0" >parse_date</td>
+      <td id="T_b1831_row17_col1" class="data row17 col1" >Nullable(DateTime64(3, 'UTC'))</td>
+      <td id="T_b1831_row17_col2" class="data row17 col2" >817</td>
+      <td id="T_b1831_row17_col3" class="data row17 col3" >0.06</td>
+      <td id="T_b1831_row17_col4" class="data row17 col4" ></td>
+      <td id="T_b1831_row17_col5" class="data row17 col5" >1294757</td>
+      <td id="T_b1831_row17_col6" class="data row17 col6" >0</td>
+      <td id="T_b1831_row17_col7" class="data row17 col7" >0.00</td>
+      <td id="T_b1831_row17_col8" class="data row17 col8" ></td>
     </tr>
   </tbody>
 </table>
@@ -542,7 +523,7 @@ rez_styled
 
 
 
-    time: 2.17 s (started: 2026-05-31 10:14:58 +03:00)
+    time: 2.11 s (started: 2026-05-31 10:25:01 +03:00)
 
 
 
@@ -552,7 +533,8 @@ total_time = end_time - start_time
 print(f"Общее время выполнения: {total_time:.4f} секунд")
 ```
 
-    Общее время выполнения: 12.5121 секунд
+    Общее время выполнения: 2.4164 секунд
+    time: 1.38 ms (started: 2026-05-31 10:25:03 +03:00)
 
 
 

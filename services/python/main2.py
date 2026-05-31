@@ -51,6 +51,7 @@ if __name__ == "__main__":
     resources = [
         Path(__file__).parent.parent.parent / "md/README_DESCRIPTION.md",
         Path(__file__).parent.parent.parent / "md/README_CL.md",
+        Path(__file__).parent.parent / "jupyter/notebooks/cars2_file.ipynb",
         Path(__file__).parent.parent.parent / "md/README_CC.md",
         Path(__file__).parent.parent.parent / "md/README_VISUAL.md",
         Path(__file__).parent.parent / "jupyter/notebooks/cars2_cc.ipynb",

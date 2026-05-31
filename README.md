@@ -44,7 +44,9 @@
 | cars_sales.parquet | 250M |
 
 
-# Jupyter Notebook - ChDB 
+# Jupyter Notebook - ChDB
+Предварительны анализ файла без загрузки данных в `clickhouse`.<br>
+Для работы с файлом используется `ChDb` 
 
 
 ```python
@@ -214,6 +216,7 @@ rows_count = int(result.data())
 
 
 ## Формируем отчет по типам, LowCardinality, Not Null, Null
+В отчете используется цветовое выделение значений. github markdown это не поддерживает.
 
 
 ```python

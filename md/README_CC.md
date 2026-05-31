@@ -71,27 +71,8 @@ clickhouse-client -q "INSERT INTO cars.cars_sales SELECT * FROM file('./raw_data
 > [!WARNING]
 > Code: 241. DB::Exception: Received from localhost:9000. DB::Exception: (total) memory limit exceeded: would use 3.24 GiB (attempt to allocate chunk of 33.22 MiB), current RSS: 2.11 GiB, maximum: 3.21 GiB. OvercommitTracker decision: Query was selected to stop by OvercommitTracker: read stage: ColumnData: column: description: (in file/uri /var/lib/clickhouse/user_files/raw_data/cars/cars_sales.parquet): While executing ParquetV3BlockInputFormat: While executing File. (MEMORY_LIMIT_EXCEEDED)
 
-### Результат 
-| name | type | default_type | default_expression | comment | codec_expression | ttl_expression |
-|:-|:-|:-|:-|:-|:-|:-|
-| brand | Nullable(String) |  |  |  |  |  |
-| name | Nullable(String) |  |  |  |  |  |
-| bodyType | Nullable(String) |  |  |  |  |  |
-| color | Nullable(String) |  |  |  |  |  |
-| fuelType | Nullable(String) |  |  |  |  |  |
-| year | Nullable(Float64) |  |  |  |  |  |
-| mileage | Nullable(Float64) |  |  |  |  |  |
-| transmission | Nullable(String) |  |  |  |  |  |
-| power | Nullable(Float64) |  |  |  |  |  |
-| price | Nullable(Int64) |  |  |  |  |  |
-| vehicleConfiguration | Nullable(String) |  |  |  |  |  |
-| engineName | Nullable(String) |  |  |  |  |  |
-| engineDisplacement | Nullable(String) |  |  |  |  |  |
-| date | Nullable(DateTime) |  |  |  |  |  |
-| location | Nullable(String) |  |  |  |  |  |
-| link | Nullable(String) |  |  |  |  |  |
-| description | Nullable(String) |  |  |  |  |  |
-| parse_date | Nullable(DateTime) |  |  |  |  |  |
+> [!WARNING]
+> Так и не удалось загрузить `parque` файл. Возможно используется какая-то другая логика. С загрузкой `csv` проблем нет.
 
 ## Создание структуры таблицы из файла (.sql)
 Проще создать предварительно `sql` файл и рабоать с ним.

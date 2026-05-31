@@ -21,7 +21,7 @@ volumes:
 ```
 Где `./datasets` относительный или абсолютный путь к папке с данными.
 
-## Создание структуры таблицы из файла
+## Создание структуры таблицы из файла (CLI)
 
 Добавить данные из файла в таблицу можно двумя способами - из локального файла который находится на локальном компьютере либо из файла который смонтирован в `docker`. В первом случае используется относительный пусть к локальному файлу `./datasets/raw_data/cars/cars_sales.csv`. Во втором случае относительный путь к файлу в рамках `docker` - `./raw_data/cars/cars_sales.csv`. Файлы в `docker` находятся в директории `/var/lib/clickhouse/user_files`
 
@@ -39,6 +39,10 @@ clickhouse-client -q "DROP TABLE IF EXISTS cars.cars_sales;"
 ```
 clickhouse-client -q "CREATE TABLE IF NOT EXISTS cars.cars_sales ENGINE = MergeTree ORDER BY tuple() EMPTY AS SELECT * FROM file('./raw_data/cars/cars_sales.csv');"
 ```
+или `parquet` файл
+```
+clickhouse-client -q "CREATE TABLE IF NOT EXISTS cars.cars_sales ENGINE = MergeTree ORDER BY tuple() EMPTY AS SELECT * FROM file('./raw_data/cars/cars_sales.parquet');"
+```
 ### Добавление данных в таблицу (локальный файл)
 ```
 clickhouse-client -q "INSERT INTO cars.cars_sales FORMAT CSVWithNames" < ./datasets/raw_data/cars/cars_sales.csv
@@ -46,10 +50,131 @@ clickhouse-client -q "INSERT INTO cars.cars_sales FORMAT CSVWithNames" < ./datas
 ```
 5.55s user 4.89s system 46% cpu 22.242 total
 ```
+или `parquet` файл
+```
+clickhouse-client -q "INSERT INTO cars.cars_sales FORMAT Parquet" < ./datasets/raw_data/cars/cars_sales.parquet
+```
+```
+7.01s user 4.55s system 40% cpu 28.321 total
+```
 ### Добавление данных в таблицу (через `docker`)
 ```
 clickhouse-client -q "INSERT INTO cars.cars_sales SELECT * FROM file('./raw_data/cars/cars_sales.csv', CSVWithNames)"
 ```
 ```
 0.05s user 0.03s system 1% cpu 7.224 total
+```
+или `parquet` файл
+```
+clickhouse-client -q "INSERT INTO cars.cars_sales SELECT * FROM file('./raw_data/cars/cars_sales.parquet', Parquet)"
+```
+> [!WARNING]
+> Code: 241. DB::Exception: Received from localhost:9000. DB::Exception: (total) memory limit exceeded: would use 3.24 GiB (attempt to allocate chunk of 33.22 MiB), current RSS: 2.11 GiB, maximum: 3.21 GiB. OvercommitTracker decision: Query was selected to stop by OvercommitTracker: read stage: ColumnData: column: description: (in file/uri /var/lib/clickhouse/user_files/raw_data/cars/cars_sales.parquet): While executing ParquetV3BlockInputFormat: While executing File. (MEMORY_LIMIT_EXCEEDED)
+
+### Результат 
+| name | type | default_type | default_expression | comment | codec_expression | ttl_expression |
+|:-|:-|:-|:-|:-|:-|:-|
+| brand | Nullable(String) |  |  |  |  |  |
+| name | Nullable(String) |  |  |  |  |  |
+| bodyType | Nullable(String) |  |  |  |  |  |
+| color | Nullable(String) |  |  |  |  |  |
+| fuelType | Nullable(String) |  |  |  |  |  |
+| year | Nullable(Float64) |  |  |  |  |  |
+| mileage | Nullable(Float64) |  |  |  |  |  |
+| transmission | Nullable(String) |  |  |  |  |  |
+| power | Nullable(Float64) |  |  |  |  |  |
+| price | Nullable(Int64) |  |  |  |  |  |
+| vehicleConfiguration | Nullable(String) |  |  |  |  |  |
+| engineName | Nullable(String) |  |  |  |  |  |
+| engineDisplacement | Nullable(String) |  |  |  |  |  |
+| date | Nullable(DateTime) |  |  |  |  |  |
+| location | Nullable(String) |  |  |  |  |  |
+| link | Nullable(String) |  |  |  |  |  |
+| description | Nullable(String) |  |  |  |  |  |
+| parse_date | Nullable(DateTime) |  |  |  |  |  |
+
+## Создание структуры таблицы из файла (.sql)
+Проще создать предварительно `sql` файл и рабоать с ним.
+```sql
+DROP DATABASE IF EXISTS cars;
+
+CREATE DATABASE IF NOT EXISTS cars;
+
+CREATE TABLE IF NOT EXISTS cars.cars_sales (
+    brand Nullable(String),
+    name Nullable(String),
+    bodyType Nullable(String),
+    color LowCardinality(Nullable(String)),
+    fuelType LowCardinality(Nullable(String)),
+    year Nullable(UInt16),
+    mileage Nullable(UInt32),
+    transmission LowCardinality(Nullable(String)),
+    power Nullable(UInt16),
+    price UInt32,
+    vehicleConfiguration LowCardinality(Nullable(String)),
+    has_awd Nullable(Bool),
+    engineName LowCardinality(Nullable(String)),
+    engineVolume Nullable(Float32),
+    date Date,
+    location LowCardinality(Nullable(String)),
+    parse_date DateTime
+)
+ENGINE = MergeTree()
+ORDER BY (brand, date, parse_date)
+SETTINGS allow_nullable_key = 1;
+
+INSERT INTO cars.cars_sales
+SELECT
+    nullIf(brand, '') as brand,
+    nullIf(name, '') as name,
+    nullIf(bodyType, '') as bodyType,
+    nullIf(color, '') as color,
+    nullIf(fuelType, '') as fuelType,
+    toUInt16OrNull(toString(toFloat32OrNull(year))) as year,
+    toUInt32OrNull(toString(toFloat32OrNull(mileage))) as mileage,
+    nullIf(replaceAll(transmission, 'Автомат', 'АКПП'),'') AS transmission,
+    toUInt16OrNull(toString(toFloat32OrNull(power))) as power,
+    toUInt32OrNull(price) as price,
+    nullIf(vehicleConfiguration, '') as vehicleConfiguration,
+
+    if(
+        vehicleConfiguration IS NULL,
+        NULL,
+        vehicleConfiguration LIKE '%AWD%'
+    ) AS has_awd,
+
+
+    nullIf(engineName, '') as engineName,
+    toFloat32OrNull(extract(engineDisplacement, '\\d+\\.?\\d*')) as engineVolume,
+    parseDateTimeBestEffort(date) as date,
+    nullIf(location, '') as location,
+    parseDateTimeBestEffort(parse_date) as parse_date
+FROM file(
+    '/var/lib/clickhouse/user_files/raw_data/cars/cars_sales.csv',
+    'CSVWithNames',
+    'brand String,
+     name String,
+     bodyType String,
+     color String,
+     fuelType String,
+     year String,
+     mileage String,
+     transmission String,
+     power String,
+     price String,
+     vehicleConfiguration String,
+     engineName String,
+     engineDisplacement String,
+     date String,
+     location String,
+     link String,
+     description String,
+     parse_date String'
+)
+SETTINGS format_csv_delimiter = ',';
+
+```
+Далее 
+```
+clickhouse-client < ./services/clickhouse/sql/cars2.sql 
 ```

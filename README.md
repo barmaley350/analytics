@@ -28,6 +28,51 @@
 ## Как запустить
 `docker compose  up --build`
 
+# Работа с `clickhouse-local`
+## Конвертируем файл из `csv` в `parquet`
+Для ускорения работы с локальным файлом его нужно конвертировать из `csv` в `parquet`
+
+```
+./clickhouse local -q "SELECT * FROM file ('./datasets/raw_data/cars/cars_sales.csv', CSVWithNames) INTO OUTFILE './datasets/raw_data/cars/car_sales.parquet' FORMAT Parquet"
+```
+```
+30.91s user 16.45s system 480% cpu 9.849 total
+```
+| Файл | Размер | 
+|---------|-----------|
+| cars_sales.csv | 2.0G | 
+| cars_sales.parquet | 250M |
+
+Разница примерно в 4 раза.
+
+## Предварительный анализ
+### Структура файла
+```
+./clickhouse local -q "DESCRIBE TABLE file ('./datasets/raw_data/cars/cars_sales.parquet') FORMAT Markdown"
+```
+
+| name | type | default_type | default_expression | comment | codec_expression | ttl_expression |
+|:-|:-|:-|:-|:-|:-|:-|
+| brand | Nullable(String) |  |  |  |  |  |
+| name | Nullable(String) |  |  |  |  |  |
+| bodyType | Nullable(String) |  |  |  |  |  |
+| color | Nullable(String) |  |  |  |  |  |
+| fuelType | Nullable(String) |  |  |  |  |  |
+| year | Nullable(Float64) |  |  |  |  |  |
+| mileage | Nullable(Float64) |  |  |  |  |  |
+| transmission | Nullable(String) |  |  |  |  |  |
+| power | Nullable(Float64) |  |  |  |  |  |
+| price | Nullable(Int64) |  |  |  |  |  |
+| vehicleConfiguration | Nullable(String) |  |  |  |  |  |
+| engineName | Nullable(String) |  |  |  |  |  |
+| engineDisplacement | Nullable(String) |  |  |  |  |  |
+| date | Nullable(DateTime64(3, \'UTC\')) |  |  |  |  |  |
+| location | Nullable(String) |  |  |  |  |  |
+| link | Nullable(String) |  |  |  |  |  |
+| description | Nullable(String) |  |  |  |  |  |
+| parse_date | Nullable(DateTime64(3, \'UTC\')) |  |  |  |  |  |
+
+
 # Работа с `clickhouse-client`
 ## Описание
 В данном проекте для работы с данными используется `clickhouse server` который работает в рамках `docker`. 
@@ -51,7 +96,7 @@ volumes:
 ```
 Где `./datasets` относительный или абсолютный путь к папке с данными.
 
-## Создание структуры таблицы из файла
+## Создание структуры таблицы из файла (CLI)
 
 Добавить данные из файла в таблицу можно двумя способами - из локального файла который находится на локальном компьютере либо из файла который смонтирован в `docker`. В первом случае используется относительный пусть к локальному файлу `./datasets/raw_data/cars/cars_sales.csv`. Во втором случае относительный путь к файлу в рамках `docker` - `./raw_data/cars/cars_sales.csv`. Файлы в `docker` находятся в директории `/var/lib/clickhouse/user_files`
 
@@ -69,6 +114,10 @@ clickhouse-client -q "DROP TABLE IF EXISTS cars.cars_sales;"
 ```
 clickhouse-client -q "CREATE TABLE IF NOT EXISTS cars.cars_sales ENGINE = MergeTree ORDER BY tuple() EMPTY AS SELECT * FROM file('./raw_data/cars/cars_sales.csv');"
 ```
+или `parquet` файл
+```
+clickhouse-client -q "CREATE TABLE IF NOT EXISTS cars.cars_sales ENGINE = MergeTree ORDER BY tuple() EMPTY AS SELECT * FROM file('./raw_data/cars/cars_sales.parquet');"
+```
 ### Добавление данных в таблицу (локальный файл)
 ```
 clickhouse-client -q "INSERT INTO cars.cars_sales FORMAT CSVWithNames" < ./datasets/raw_data/cars/cars_sales.csv
@@ -76,12 +125,133 @@ clickhouse-client -q "INSERT INTO cars.cars_sales FORMAT CSVWithNames" < ./datas
 ```
 5.55s user 4.89s system 46% cpu 22.242 total
 ```
+или `parquet` файл
+```
+clickhouse-client -q "INSERT INTO cars.cars_sales FORMAT Parquet" < ./datasets/raw_data/cars/cars_sales.parquet
+```
+```
+7.01s user 4.55s system 40% cpu 28.321 total
+```
 ### Добавление данных в таблицу (через `docker`)
 ```
 clickhouse-client -q "INSERT INTO cars.cars_sales SELECT * FROM file('./raw_data/cars/cars_sales.csv', CSVWithNames)"
 ```
 ```
 0.05s user 0.03s system 1% cpu 7.224 total
+```
+или `parquet` файл
+```
+clickhouse-client -q "INSERT INTO cars.cars_sales SELECT * FROM file('./raw_data/cars/cars_sales.parquet', Parquet)"
+```
+> [!WARNING]
+> Code: 241. DB::Exception: Received from localhost:9000. DB::Exception: (total) memory limit exceeded: would use 3.24 GiB (attempt to allocate chunk of 33.22 MiB), current RSS: 2.11 GiB, maximum: 3.21 GiB. OvercommitTracker decision: Query was selected to stop by OvercommitTracker: read stage: ColumnData: column: description: (in file/uri /var/lib/clickhouse/user_files/raw_data/cars/cars_sales.parquet): While executing ParquetV3BlockInputFormat: While executing File. (MEMORY_LIMIT_EXCEEDED)
+
+### Результат 
+| name | type | default_type | default_expression | comment | codec_expression | ttl_expression |
+|:-|:-|:-|:-|:-|:-|:-|
+| brand | Nullable(String) |  |  |  |  |  |
+| name | Nullable(String) |  |  |  |  |  |
+| bodyType | Nullable(String) |  |  |  |  |  |
+| color | Nullable(String) |  |  |  |  |  |
+| fuelType | Nullable(String) |  |  |  |  |  |
+| year | Nullable(Float64) |  |  |  |  |  |
+| mileage | Nullable(Float64) |  |  |  |  |  |
+| transmission | Nullable(String) |  |  |  |  |  |
+| power | Nullable(Float64) |  |  |  |  |  |
+| price | Nullable(Int64) |  |  |  |  |  |
+| vehicleConfiguration | Nullable(String) |  |  |  |  |  |
+| engineName | Nullable(String) |  |  |  |  |  |
+| engineDisplacement | Nullable(String) |  |  |  |  |  |
+| date | Nullable(DateTime) |  |  |  |  |  |
+| location | Nullable(String) |  |  |  |  |  |
+| link | Nullable(String) |  |  |  |  |  |
+| description | Nullable(String) |  |  |  |  |  |
+| parse_date | Nullable(DateTime) |  |  |  |  |  |
+
+## Создание структуры таблицы из файла (.sql)
+Проще создать предварительно `sql` файл и рабоать с ним.
+```sql
+DROP DATABASE IF EXISTS cars;
+
+CREATE DATABASE IF NOT EXISTS cars;
+
+CREATE TABLE IF NOT EXISTS cars.cars_sales (
+    brand Nullable(String),
+    name Nullable(String),
+    bodyType Nullable(String),
+    color LowCardinality(Nullable(String)),
+    fuelType LowCardinality(Nullable(String)),
+    year Nullable(UInt16),
+    mileage Nullable(UInt32),
+    transmission LowCardinality(Nullable(String)),
+    power Nullable(UInt16),
+    price UInt32,
+    vehicleConfiguration LowCardinality(Nullable(String)),
+    has_awd Nullable(Bool),
+    engineName LowCardinality(Nullable(String)),
+    engineVolume Nullable(Float32),
+    date Date,
+    location LowCardinality(Nullable(String)),
+    parse_date DateTime
+)
+ENGINE = MergeTree()
+ORDER BY (brand, date, parse_date)
+SETTINGS allow_nullable_key = 1;
+
+INSERT INTO cars.cars_sales
+SELECT
+    nullIf(brand, '') as brand,
+    nullIf(name, '') as name,
+    nullIf(bodyType, '') as bodyType,
+    nullIf(color, '') as color,
+    nullIf(fuelType, '') as fuelType,
+    toUInt16OrNull(toString(toFloat32OrNull(year))) as year,
+    toUInt32OrNull(toString(toFloat32OrNull(mileage))) as mileage,
+    nullIf(replaceAll(transmission, 'Автомат', 'АКПП'),'') AS transmission,
+    toUInt16OrNull(toString(toFloat32OrNull(power))) as power,
+    toUInt32OrNull(price) as price,
+    nullIf(vehicleConfiguration, '') as vehicleConfiguration,
+
+    if(
+        vehicleConfiguration IS NULL,
+        NULL,
+        vehicleConfiguration LIKE '%AWD%'
+    ) AS has_awd,
+
+
+    nullIf(engineName, '') as engineName,
+    toFloat32OrNull(extract(engineDisplacement, '\\d+\\.?\\d*')) as engineVolume,
+    parseDateTimeBestEffort(date) as date,
+    nullIf(location, '') as location,
+    parseDateTimeBestEffort(parse_date) as parse_date
+FROM file(
+    '/var/lib/clickhouse/user_files/raw_data/cars/cars_sales.csv',
+    'CSVWithNames',
+    'brand String,
+     name String,
+     bodyType String,
+     color String,
+     fuelType String,
+     year String,
+     mileage String,
+     transmission String,
+     power String,
+     price String,
+     vehicleConfiguration String,
+     engineName String,
+     engineDisplacement String,
+     date String,
+     location String,
+     link String,
+     description String,
+     parse_date String'
+)
+SETTINGS format_csv_delimiter = ',';
+
+```
+Далее 
+```
+clickhouse-client < ./services/clickhouse/sql/cars2.sql 
 ```
 
 # Визуализация
@@ -100,7 +270,7 @@ clickhouse-client -q "INSERT INTO cars.cars_sales SELECT * FROM file('./raw_data
 %matplotlib inline
 ```
 
-    time: 490 ms (started: 2026-05-30 18:22:21 +03:00)
+    time: 943 ms (started: 2026-05-31 07:20:48 +03:00)
 
 
 ## Замер времени выполнения
@@ -112,7 +282,7 @@ import time
 start_time = time.perf_counter()
 ```
 
-    time: 305 μs (started: 2026-05-30 18:22:22 +03:00)
+    time: 466 μs (started: 2026-05-31 07:20:49 +03:00)
 
 
 ## Подключаем основные модули
@@ -134,7 +304,7 @@ from my_module.my_func import (
 
 ```
 
-    time: 445 ms (started: 2026-05-30 18:22:22 +03:00)
+    time: 821 ms (started: 2026-05-31 07:20:49 +03:00)
 
 
 ## Объявляем основные переменные
@@ -158,7 +328,7 @@ sample_percent = 0.01
 sample_count = 3
 ```
 
-    time: 356 μs (started: 2026-05-30 18:22:22 +03:00)
+    time: 575 μs (started: 2026-05-31 07:20:50 +03:00)
 
 
 ## Подключаемся к база данных `clickhouse`
@@ -181,7 +351,7 @@ client = clickhouse_connect.get_client(
 )
 ```
 
-    time: 24.1 ms (started: 2026-05-30 18:22:22 +03:00)
+    time: 31.8 ms (started: 2026-05-31 07:20:50 +03:00)
 
 
 ## Получаем общее кол-во записей в таблице `car_sales`
@@ -238,7 +408,7 @@ info_df
 
 
 
-    time: 16.3 ms (started: 2026-05-30 18:22:22 +03:00)
+    time: 33.2 ms (started: 2026-05-31 07:20:50 +03:00)
 
 
 ## Формирование отчета аналогичного `pandas .info()`
@@ -314,225 +484,225 @@ rez_styled
 
 
 
-<table id="T_4e972">
+<table id="T_ae2f2">
   <thead>
     <tr>
       <th class="blank level0" >&nbsp;</th>
-      <th id="T_4e972_level0_col0" class="col_heading level0 col0" >field</th>
-      <th id="T_4e972_level0_col1" class="col_heading level0 col1" >type</th>
-      <th id="T_4e972_level0_col2" class="col_heading level0 col2" >Uniq Count</th>
-      <th id="T_4e972_level0_col3" class="col_heading level0 col3" >Uniq Count %</th>
-      <th id="T_4e972_level0_col4" class="col_heading level0 col4" >Description Uniq</th>
-      <th id="T_4e972_level0_col5" class="col_heading level0 col5" >Non-Null Count</th>
-      <th id="T_4e972_level0_col6" class="col_heading level0 col6" >Null Count</th>
-      <th id="T_4e972_level0_col7" class="col_heading level0 col7" >Null Count %</th>
-      <th id="T_4e972_level0_col8" class="col_heading level0 col8" >Description Null</th>
+      <th id="T_ae2f2_level0_col0" class="col_heading level0 col0" >field</th>
+      <th id="T_ae2f2_level0_col1" class="col_heading level0 col1" >type</th>
+      <th id="T_ae2f2_level0_col2" class="col_heading level0 col2" >Uniq Count</th>
+      <th id="T_ae2f2_level0_col3" class="col_heading level0 col3" >Uniq Count %</th>
+      <th id="T_ae2f2_level0_col4" class="col_heading level0 col4" >Description Uniq</th>
+      <th id="T_ae2f2_level0_col5" class="col_heading level0 col5" >Non-Null Count</th>
+      <th id="T_ae2f2_level0_col6" class="col_heading level0 col6" >Null Count</th>
+      <th id="T_ae2f2_level0_col7" class="col_heading level0 col7" >Null Count %</th>
+      <th id="T_ae2f2_level0_col8" class="col_heading level0 col8" >Description Null</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <th id="T_4e972_level0_row0" class="row_heading level0 row0" >0</th>
-      <td id="T_4e972_row0_col0" class="data row0 col0" >brand</td>
-      <td id="T_4e972_row0_col1" class="data row0 col1" >Nullable(String)</td>
-      <td id="T_4e972_row0_col2" class="data row0 col2" >160</td>
-      <td id="T_4e972_row0_col3" class="data row0 col3" >0.01</td>
-      <td id="T_4e972_row0_col4" class="data row0 col4" >LowCardinality</td>
-      <td id="T_4e972_row0_col5" class="data row0 col5" >1294757</td>
-      <td id="T_4e972_row0_col6" class="data row0 col6" >0</td>
-      <td id="T_4e972_row0_col7" class="data row0 col7" >0.00</td>
-      <td id="T_4e972_row0_col8" class="data row0 col8" ></td>
+      <th id="T_ae2f2_level0_row0" class="row_heading level0 row0" >0</th>
+      <td id="T_ae2f2_row0_col0" class="data row0 col0" >brand</td>
+      <td id="T_ae2f2_row0_col1" class="data row0 col1" >Nullable(String)</td>
+      <td id="T_ae2f2_row0_col2" class="data row0 col2" >160</td>
+      <td id="T_ae2f2_row0_col3" class="data row0 col3" >0.01</td>
+      <td id="T_ae2f2_row0_col4" class="data row0 col4" >LowCardinality</td>
+      <td id="T_ae2f2_row0_col5" class="data row0 col5" >1294757</td>
+      <td id="T_ae2f2_row0_col6" class="data row0 col6" >0</td>
+      <td id="T_ae2f2_row0_col7" class="data row0 col7" >0.00</td>
+      <td id="T_ae2f2_row0_col8" class="data row0 col8" ></td>
     </tr>
     <tr>
-      <th id="T_4e972_level0_row1" class="row_heading level0 row1" >1</th>
-      <td id="T_4e972_row1_col0" class="data row1 col0" >name</td>
-      <td id="T_4e972_row1_col1" class="data row1 col1" >Nullable(String)</td>
-      <td id="T_4e972_row1_col2" class="data row1 col2" >2223</td>
-      <td id="T_4e972_row1_col3" class="data row1 col3" >0.17</td>
-      <td id="T_4e972_row1_col4" class="data row1 col4" >LowCardinality</td>
-      <td id="T_4e972_row1_col5" class="data row1 col5" >1294757</td>
-      <td id="T_4e972_row1_col6" class="data row1 col6" >0</td>
-      <td id="T_4e972_row1_col7" class="data row1 col7" >0.00</td>
-      <td id="T_4e972_row1_col8" class="data row1 col8" ></td>
+      <th id="T_ae2f2_level0_row1" class="row_heading level0 row1" >1</th>
+      <td id="T_ae2f2_row1_col0" class="data row1 col0" >name</td>
+      <td id="T_ae2f2_row1_col1" class="data row1 col1" >Nullable(String)</td>
+      <td id="T_ae2f2_row1_col2" class="data row1 col2" >2223</td>
+      <td id="T_ae2f2_row1_col3" class="data row1 col3" >0.17</td>
+      <td id="T_ae2f2_row1_col4" class="data row1 col4" >LowCardinality</td>
+      <td id="T_ae2f2_row1_col5" class="data row1 col5" >1294757</td>
+      <td id="T_ae2f2_row1_col6" class="data row1 col6" >0</td>
+      <td id="T_ae2f2_row1_col7" class="data row1 col7" >0.00</td>
+      <td id="T_ae2f2_row1_col8" class="data row1 col8" ></td>
     </tr>
     <tr>
-      <th id="T_4e972_level0_row2" class="row_heading level0 row2" >2</th>
-      <td id="T_4e972_row2_col0" class="data row2 col0" >bodyType</td>
-      <td id="T_4e972_row2_col1" class="data row2 col1" >Nullable(String)</td>
-      <td id="T_4e972_row2_col2" class="data row2 col2" >11</td>
-      <td id="T_4e972_row2_col3" class="data row2 col3" >0.00</td>
-      <td id="T_4e972_row2_col4" class="data row2 col4" >LowCardinality</td>
-      <td id="T_4e972_row2_col5" class="data row2 col5" >1294757</td>
-      <td id="T_4e972_row2_col6" class="data row2 col6" >0</td>
-      <td id="T_4e972_row2_col7" class="data row2 col7" >0.00</td>
-      <td id="T_4e972_row2_col8" class="data row2 col8" ></td>
+      <th id="T_ae2f2_level0_row2" class="row_heading level0 row2" >2</th>
+      <td id="T_ae2f2_row2_col0" class="data row2 col0" >bodyType</td>
+      <td id="T_ae2f2_row2_col1" class="data row2 col1" >Nullable(String)</td>
+      <td id="T_ae2f2_row2_col2" class="data row2 col2" >11</td>
+      <td id="T_ae2f2_row2_col3" class="data row2 col3" >0.00</td>
+      <td id="T_ae2f2_row2_col4" class="data row2 col4" >LowCardinality</td>
+      <td id="T_ae2f2_row2_col5" class="data row2 col5" >1294757</td>
+      <td id="T_ae2f2_row2_col6" class="data row2 col6" >0</td>
+      <td id="T_ae2f2_row2_col7" class="data row2 col7" >0.00</td>
+      <td id="T_ae2f2_row2_col8" class="data row2 col8" ></td>
     </tr>
     <tr>
-      <th id="T_4e972_level0_row3" class="row_heading level0 row3" >3</th>
-      <td id="T_4e972_row3_col0" class="data row3 col0" >color</td>
-      <td id="T_4e972_row3_col1" class="data row3 col1" >LowCardinality(Nullable(String))</td>
-      <td id="T_4e972_row3_col2" class="data row3 col2" >16</td>
-      <td id="T_4e972_row3_col3" class="data row3 col3" >0.00</td>
-      <td id="T_4e972_row3_col4" class="data row3 col4" >LowCardinality</td>
-      <td id="T_4e972_row3_col5" class="data row3 col5" >1257029</td>
-      <td id="T_4e972_row3_col6" class="data row3 col6" >37728</td>
-      <td id="T_4e972_row3_col7" class="data row3 col7" >2.91</td>
-      <td id="T_4e972_row3_col8" class="data row3 col8" >Мало</td>
+      <th id="T_ae2f2_level0_row3" class="row_heading level0 row3" >3</th>
+      <td id="T_ae2f2_row3_col0" class="data row3 col0" >color</td>
+      <td id="T_ae2f2_row3_col1" class="data row3 col1" >LowCardinality(Nullable(String))</td>
+      <td id="T_ae2f2_row3_col2" class="data row3 col2" >16</td>
+      <td id="T_ae2f2_row3_col3" class="data row3 col3" >0.00</td>
+      <td id="T_ae2f2_row3_col4" class="data row3 col4" >LowCardinality</td>
+      <td id="T_ae2f2_row3_col5" class="data row3 col5" >1257029</td>
+      <td id="T_ae2f2_row3_col6" class="data row3 col6" >37728</td>
+      <td id="T_ae2f2_row3_col7" class="data row3 col7" >2.91</td>
+      <td id="T_ae2f2_row3_col8" class="data row3 col8" >Мало</td>
     </tr>
     <tr>
-      <th id="T_4e972_level0_row4" class="row_heading level0 row4" >4</th>
-      <td id="T_4e972_row4_col0" class="data row4 col0" >fuelType</td>
-      <td id="T_4e972_row4_col1" class="data row4 col1" >LowCardinality(Nullable(String))</td>
-      <td id="T_4e972_row4_col2" class="data row4 col2" >3</td>
-      <td id="T_4e972_row4_col3" class="data row4 col3" >0.00</td>
-      <td id="T_4e972_row4_col4" class="data row4 col4" >LowCardinality</td>
-      <td id="T_4e972_row4_col5" class="data row4 col5" >1289815</td>
-      <td id="T_4e972_row4_col6" class="data row4 col6" >4942</td>
-      <td id="T_4e972_row4_col7" class="data row4 col7" >0.38</td>
-      <td id="T_4e972_row4_col8" class="data row4 col8" >Мало</td>
+      <th id="T_ae2f2_level0_row4" class="row_heading level0 row4" >4</th>
+      <td id="T_ae2f2_row4_col0" class="data row4 col0" >fuelType</td>
+      <td id="T_ae2f2_row4_col1" class="data row4 col1" >LowCardinality(Nullable(String))</td>
+      <td id="T_ae2f2_row4_col2" class="data row4 col2" >3</td>
+      <td id="T_ae2f2_row4_col3" class="data row4 col3" >0.00</td>
+      <td id="T_ae2f2_row4_col4" class="data row4 col4" >LowCardinality</td>
+      <td id="T_ae2f2_row4_col5" class="data row4 col5" >1289815</td>
+      <td id="T_ae2f2_row4_col6" class="data row4 col6" >4942</td>
+      <td id="T_ae2f2_row4_col7" class="data row4 col7" >0.38</td>
+      <td id="T_ae2f2_row4_col8" class="data row4 col8" >Мало</td>
     </tr>
     <tr>
-      <th id="T_4e972_level0_row5" class="row_heading level0 row5" >5</th>
-      <td id="T_4e972_row5_col0" class="data row5 col0" >year</td>
-      <td id="T_4e972_row5_col1" class="data row5 col1" >Nullable(UInt16)</td>
-      <td id="T_4e972_row5_col2" class="data row5 col2" >78</td>
-      <td id="T_4e972_row5_col3" class="data row5 col3" >0.01</td>
-      <td id="T_4e972_row5_col4" class="data row5 col4" ></td>
-      <td id="T_4e972_row5_col5" class="data row5 col5" >724644</td>
-      <td id="T_4e972_row5_col6" class="data row5 col6" >570113</td>
-      <td id="T_4e972_row5_col7" class="data row5 col7" >44.03</td>
-      <td id="T_4e972_row5_col8" class="data row5 col8" >Много</td>
+      <th id="T_ae2f2_level0_row5" class="row_heading level0 row5" >5</th>
+      <td id="T_ae2f2_row5_col0" class="data row5 col0" >year</td>
+      <td id="T_ae2f2_row5_col1" class="data row5 col1" >Nullable(UInt16)</td>
+      <td id="T_ae2f2_row5_col2" class="data row5 col2" >78</td>
+      <td id="T_ae2f2_row5_col3" class="data row5 col3" >0.01</td>
+      <td id="T_ae2f2_row5_col4" class="data row5 col4" ></td>
+      <td id="T_ae2f2_row5_col5" class="data row5 col5" >724644</td>
+      <td id="T_ae2f2_row5_col6" class="data row5 col6" >570113</td>
+      <td id="T_ae2f2_row5_col7" class="data row5 col7" >44.03</td>
+      <td id="T_ae2f2_row5_col8" class="data row5 col8" >Много</td>
     </tr>
     <tr>
-      <th id="T_4e972_level0_row6" class="row_heading level0 row6" >6</th>
-      <td id="T_4e972_row6_col0" class="data row6 col0" >mileage</td>
-      <td id="T_4e972_row6_col1" class="data row6 col1" >Nullable(UInt32)</td>
-      <td id="T_4e972_row6_col2" class="data row6 col2" >821</td>
-      <td id="T_4e972_row6_col3" class="data row6 col3" >0.06</td>
-      <td id="T_4e972_row6_col4" class="data row6 col4" ></td>
-      <td id="T_4e972_row6_col5" class="data row6 col5" >771799</td>
-      <td id="T_4e972_row6_col6" class="data row6 col6" >522958</td>
-      <td id="T_4e972_row6_col7" class="data row6 col7" >40.39</td>
-      <td id="T_4e972_row6_col8" class="data row6 col8" >Много</td>
+      <th id="T_ae2f2_level0_row6" class="row_heading level0 row6" >6</th>
+      <td id="T_ae2f2_row6_col0" class="data row6 col0" >mileage</td>
+      <td id="T_ae2f2_row6_col1" class="data row6 col1" >Nullable(UInt32)</td>
+      <td id="T_ae2f2_row6_col2" class="data row6 col2" >821</td>
+      <td id="T_ae2f2_row6_col3" class="data row6 col3" >0.06</td>
+      <td id="T_ae2f2_row6_col4" class="data row6 col4" ></td>
+      <td id="T_ae2f2_row6_col5" class="data row6 col5" >771799</td>
+      <td id="T_ae2f2_row6_col6" class="data row6 col6" >522958</td>
+      <td id="T_ae2f2_row6_col7" class="data row6 col7" >40.39</td>
+      <td id="T_ae2f2_row6_col8" class="data row6 col8" >Много</td>
     </tr>
     <tr>
-      <th id="T_4e972_level0_row7" class="row_heading level0 row7" >7</th>
-      <td id="T_4e972_row7_col0" class="data row7 col0" >transmission</td>
-      <td id="T_4e972_row7_col1" class="data row7 col1" >LowCardinality(Nullable(String))</td>
-      <td id="T_4e972_row7_col2" class="data row7 col2" >4</td>
-      <td id="T_4e972_row7_col3" class="data row7 col3" >0.00</td>
-      <td id="T_4e972_row7_col4" class="data row7 col4" >LowCardinality</td>
-      <td id="T_4e972_row7_col5" class="data row7 col5" >1289563</td>
-      <td id="T_4e972_row7_col6" class="data row7 col6" >5194</td>
-      <td id="T_4e972_row7_col7" class="data row7 col7" >0.40</td>
-      <td id="T_4e972_row7_col8" class="data row7 col8" >Мало</td>
+      <th id="T_ae2f2_level0_row7" class="row_heading level0 row7" >7</th>
+      <td id="T_ae2f2_row7_col0" class="data row7 col0" >transmission</td>
+      <td id="T_ae2f2_row7_col1" class="data row7 col1" >LowCardinality(Nullable(String))</td>
+      <td id="T_ae2f2_row7_col2" class="data row7 col2" >4</td>
+      <td id="T_ae2f2_row7_col3" class="data row7 col3" >0.00</td>
+      <td id="T_ae2f2_row7_col4" class="data row7 col4" >LowCardinality</td>
+      <td id="T_ae2f2_row7_col5" class="data row7 col5" >1289563</td>
+      <td id="T_ae2f2_row7_col6" class="data row7 col6" >5194</td>
+      <td id="T_ae2f2_row7_col7" class="data row7 col7" >0.40</td>
+      <td id="T_ae2f2_row7_col8" class="data row7 col8" >Мало</td>
     </tr>
     <tr>
-      <th id="T_4e972_level0_row8" class="row_heading level0 row8" >8</th>
-      <td id="T_4e972_row8_col0" class="data row8 col0" >power</td>
-      <td id="T_4e972_row8_col1" class="data row8 col1" >Nullable(UInt16)</td>
-      <td id="T_4e972_row8_col2" class="data row8 col2" >541</td>
-      <td id="T_4e972_row8_col3" class="data row8 col3" >0.04</td>
-      <td id="T_4e972_row8_col4" class="data row8 col4" ></td>
-      <td id="T_4e972_row8_col5" class="data row8 col5" >1273353</td>
-      <td id="T_4e972_row8_col6" class="data row8 col6" >21404</td>
-      <td id="T_4e972_row8_col7" class="data row8 col7" >1.65</td>
-      <td id="T_4e972_row8_col8" class="data row8 col8" >Мало</td>
+      <th id="T_ae2f2_level0_row8" class="row_heading level0 row8" >8</th>
+      <td id="T_ae2f2_row8_col0" class="data row8 col0" >power</td>
+      <td id="T_ae2f2_row8_col1" class="data row8 col1" >Nullable(UInt16)</td>
+      <td id="T_ae2f2_row8_col2" class="data row8 col2" >541</td>
+      <td id="T_ae2f2_row8_col3" class="data row8 col3" >0.04</td>
+      <td id="T_ae2f2_row8_col4" class="data row8 col4" ></td>
+      <td id="T_ae2f2_row8_col5" class="data row8 col5" >1273353</td>
+      <td id="T_ae2f2_row8_col6" class="data row8 col6" >21404</td>
+      <td id="T_ae2f2_row8_col7" class="data row8 col7" >1.65</td>
+      <td id="T_ae2f2_row8_col8" class="data row8 col8" >Мало</td>
     </tr>
     <tr>
-      <th id="T_4e972_level0_row9" class="row_heading level0 row9" >9</th>
-      <td id="T_4e972_row9_col0" class="data row9 col0" >price</td>
-      <td id="T_4e972_row9_col1" class="data row9 col1" >UInt32</td>
-      <td id="T_4e972_row9_col2" class="data row9 col2" >35134</td>
-      <td id="T_4e972_row9_col3" class="data row9 col3" >2.71</td>
-      <td id="T_4e972_row9_col4" class="data row9 col4" ></td>
-      <td id="T_4e972_row9_col5" class="data row9 col5" >1294757</td>
-      <td id="T_4e972_row9_col6" class="data row9 col6" >0</td>
-      <td id="T_4e972_row9_col7" class="data row9 col7" >0.00</td>
-      <td id="T_4e972_row9_col8" class="data row9 col8" ></td>
+      <th id="T_ae2f2_level0_row9" class="row_heading level0 row9" >9</th>
+      <td id="T_ae2f2_row9_col0" class="data row9 col0" >price</td>
+      <td id="T_ae2f2_row9_col1" class="data row9 col1" >UInt32</td>
+      <td id="T_ae2f2_row9_col2" class="data row9 col2" >35134</td>
+      <td id="T_ae2f2_row9_col3" class="data row9 col3" >2.71</td>
+      <td id="T_ae2f2_row9_col4" class="data row9 col4" ></td>
+      <td id="T_ae2f2_row9_col5" class="data row9 col5" >1294757</td>
+      <td id="T_ae2f2_row9_col6" class="data row9 col6" >0</td>
+      <td id="T_ae2f2_row9_col7" class="data row9 col7" >0.00</td>
+      <td id="T_ae2f2_row9_col8" class="data row9 col8" ></td>
     </tr>
     <tr>
-      <th id="T_4e972_level0_row10" class="row_heading level0 row10" >10</th>
-      <td id="T_4e972_row10_col0" class="data row10 col0" >vehicleConfiguration</td>
-      <td id="T_4e972_row10_col1" class="data row10 col1" >LowCardinality(Nullable(String))</td>
-      <td id="T_4e972_row10_col2" class="data row10 col2" >25517</td>
-      <td id="T_4e972_row10_col3" class="data row10 col3" >1.97</td>
-      <td id="T_4e972_row10_col4" class="data row10 col4" >LowCardinality</td>
-      <td id="T_4e972_row10_col5" class="data row10 col5" >724647</td>
-      <td id="T_4e972_row10_col6" class="data row10 col6" >570110</td>
-      <td id="T_4e972_row10_col7" class="data row10 col7" >44.03</td>
-      <td id="T_4e972_row10_col8" class="data row10 col8" >Много</td>
+      <th id="T_ae2f2_level0_row10" class="row_heading level0 row10" >10</th>
+      <td id="T_ae2f2_row10_col0" class="data row10 col0" >vehicleConfiguration</td>
+      <td id="T_ae2f2_row10_col1" class="data row10 col1" >LowCardinality(Nullable(String))</td>
+      <td id="T_ae2f2_row10_col2" class="data row10 col2" >25517</td>
+      <td id="T_ae2f2_row10_col3" class="data row10 col3" >1.97</td>
+      <td id="T_ae2f2_row10_col4" class="data row10 col4" >LowCardinality</td>
+      <td id="T_ae2f2_row10_col5" class="data row10 col5" >724647</td>
+      <td id="T_ae2f2_row10_col6" class="data row10 col6" >570110</td>
+      <td id="T_ae2f2_row10_col7" class="data row10 col7" >44.03</td>
+      <td id="T_ae2f2_row10_col8" class="data row10 col8" >Много</td>
     </tr>
     <tr>
-      <th id="T_4e972_level0_row11" class="row_heading level0 row11" >11</th>
-      <td id="T_4e972_row11_col0" class="data row11 col0" >has_awd</td>
-      <td id="T_4e972_row11_col1" class="data row11 col1" >Nullable(Bool)</td>
-      <td id="T_4e972_row11_col2" class="data row11 col2" >2</td>
-      <td id="T_4e972_row11_col3" class="data row11 col3" >0.00</td>
-      <td id="T_4e972_row11_col4" class="data row11 col4" ></td>
-      <td id="T_4e972_row11_col5" class="data row11 col5" >724647</td>
-      <td id="T_4e972_row11_col6" class="data row11 col6" >570110</td>
-      <td id="T_4e972_row11_col7" class="data row11 col7" >44.03</td>
-      <td id="T_4e972_row11_col8" class="data row11 col8" >Много</td>
+      <th id="T_ae2f2_level0_row11" class="row_heading level0 row11" >11</th>
+      <td id="T_ae2f2_row11_col0" class="data row11 col0" >has_awd</td>
+      <td id="T_ae2f2_row11_col1" class="data row11 col1" >Nullable(Bool)</td>
+      <td id="T_ae2f2_row11_col2" class="data row11 col2" >2</td>
+      <td id="T_ae2f2_row11_col3" class="data row11 col3" >0.00</td>
+      <td id="T_ae2f2_row11_col4" class="data row11 col4" ></td>
+      <td id="T_ae2f2_row11_col5" class="data row11 col5" >724647</td>
+      <td id="T_ae2f2_row11_col6" class="data row11 col6" >570110</td>
+      <td id="T_ae2f2_row11_col7" class="data row11 col7" >44.03</td>
+      <td id="T_ae2f2_row11_col8" class="data row11 col8" >Много</td>
     </tr>
     <tr>
-      <th id="T_4e972_level0_row12" class="row_heading level0 row12" >12</th>
-      <td id="T_4e972_row12_col0" class="data row12 col0" >engineName</td>
-      <td id="T_4e972_row12_col1" class="data row12 col1" >LowCardinality(Nullable(String))</td>
-      <td id="T_4e972_row12_col2" class="data row12 col2" >4185</td>
-      <td id="T_4e972_row12_col3" class="data row12 col3" >0.32</td>
-      <td id="T_4e972_row12_col4" class="data row12 col4" >LowCardinality</td>
-      <td id="T_4e972_row12_col5" class="data row12 col5" >720976</td>
-      <td id="T_4e972_row12_col6" class="data row12 col6" >573781</td>
-      <td id="T_4e972_row12_col7" class="data row12 col7" >44.32</td>
-      <td id="T_4e972_row12_col8" class="data row12 col8" >Много</td>
+      <th id="T_ae2f2_level0_row12" class="row_heading level0 row12" >12</th>
+      <td id="T_ae2f2_row12_col0" class="data row12 col0" >engineName</td>
+      <td id="T_ae2f2_row12_col1" class="data row12 col1" >LowCardinality(Nullable(String))</td>
+      <td id="T_ae2f2_row12_col2" class="data row12 col2" >4185</td>
+      <td id="T_ae2f2_row12_col3" class="data row12 col3" >0.32</td>
+      <td id="T_ae2f2_row12_col4" class="data row12 col4" >LowCardinality</td>
+      <td id="T_ae2f2_row12_col5" class="data row12 col5" >720976</td>
+      <td id="T_ae2f2_row12_col6" class="data row12 col6" >573781</td>
+      <td id="T_ae2f2_row12_col7" class="data row12 col7" >44.32</td>
+      <td id="T_ae2f2_row12_col8" class="data row12 col8" >Много</td>
     </tr>
     <tr>
-      <th id="T_4e972_level0_row13" class="row_heading level0 row13" >13</th>
-      <td id="T_4e972_row13_col0" class="data row13 col0" >engineVolume</td>
-      <td id="T_4e972_row13_col1" class="data row13 col1" >Nullable(Float32)</td>
-      <td id="T_4e972_row13_col2" class="data row13 col2" >69</td>
-      <td id="T_4e972_row13_col3" class="data row13 col3" >0.01</td>
-      <td id="T_4e972_row13_col4" class="data row13 col4" ></td>
-      <td id="T_4e972_row13_col5" class="data row13 col5" >717625</td>
-      <td id="T_4e972_row13_col6" class="data row13 col6" >577132</td>
-      <td id="T_4e972_row13_col7" class="data row13 col7" >44.57</td>
-      <td id="T_4e972_row13_col8" class="data row13 col8" >Много</td>
+      <th id="T_ae2f2_level0_row13" class="row_heading level0 row13" >13</th>
+      <td id="T_ae2f2_row13_col0" class="data row13 col0" >engineVolume</td>
+      <td id="T_ae2f2_row13_col1" class="data row13 col1" >Nullable(Float32)</td>
+      <td id="T_ae2f2_row13_col2" class="data row13 col2" >69</td>
+      <td id="T_ae2f2_row13_col3" class="data row13 col3" >0.01</td>
+      <td id="T_ae2f2_row13_col4" class="data row13 col4" ></td>
+      <td id="T_ae2f2_row13_col5" class="data row13 col5" >717625</td>
+      <td id="T_ae2f2_row13_col6" class="data row13 col6" >577132</td>
+      <td id="T_ae2f2_row13_col7" class="data row13 col7" >44.57</td>
+      <td id="T_ae2f2_row13_col8" class="data row13 col8" >Много</td>
     </tr>
     <tr>
-      <th id="T_4e972_level0_row14" class="row_heading level0 row14" >14</th>
-      <td id="T_4e972_row14_col0" class="data row14 col0" >date</td>
-      <td id="T_4e972_row14_col1" class="data row14 col1" >Date</td>
-      <td id="T_4e972_row14_col2" class="data row14 col2" >84</td>
-      <td id="T_4e972_row14_col3" class="data row14 col3" >0.01</td>
-      <td id="T_4e972_row14_col4" class="data row14 col4" ></td>
-      <td id="T_4e972_row14_col5" class="data row14 col5" >1294757</td>
-      <td id="T_4e972_row14_col6" class="data row14 col6" >0</td>
-      <td id="T_4e972_row14_col7" class="data row14 col7" >0.00</td>
-      <td id="T_4e972_row14_col8" class="data row14 col8" ></td>
+      <th id="T_ae2f2_level0_row14" class="row_heading level0 row14" >14</th>
+      <td id="T_ae2f2_row14_col0" class="data row14 col0" >date</td>
+      <td id="T_ae2f2_row14_col1" class="data row14 col1" >Date</td>
+      <td id="T_ae2f2_row14_col2" class="data row14 col2" >84</td>
+      <td id="T_ae2f2_row14_col3" class="data row14 col3" >0.01</td>
+      <td id="T_ae2f2_row14_col4" class="data row14 col4" ></td>
+      <td id="T_ae2f2_row14_col5" class="data row14 col5" >1294757</td>
+      <td id="T_ae2f2_row14_col6" class="data row14 col6" >0</td>
+      <td id="T_ae2f2_row14_col7" class="data row14 col7" >0.00</td>
+      <td id="T_ae2f2_row14_col8" class="data row14 col8" ></td>
     </tr>
     <tr>
-      <th id="T_4e972_level0_row15" class="row_heading level0 row15" >15</th>
-      <td id="T_4e972_row15_col0" class="data row15 col0" >location</td>
-      <td id="T_4e972_row15_col1" class="data row15 col1" >LowCardinality(Nullable(String))</td>
-      <td id="T_4e972_row15_col2" class="data row15 col2" >3400</td>
-      <td id="T_4e972_row15_col3" class="data row15 col3" >0.26</td>
-      <td id="T_4e972_row15_col4" class="data row15 col4" >LowCardinality</td>
-      <td id="T_4e972_row15_col5" class="data row15 col5" >1294757</td>
-      <td id="T_4e972_row15_col6" class="data row15 col6" >0</td>
-      <td id="T_4e972_row15_col7" class="data row15 col7" >0.00</td>
-      <td id="T_4e972_row15_col8" class="data row15 col8" ></td>
+      <th id="T_ae2f2_level0_row15" class="row_heading level0 row15" >15</th>
+      <td id="T_ae2f2_row15_col0" class="data row15 col0" >location</td>
+      <td id="T_ae2f2_row15_col1" class="data row15 col1" >LowCardinality(Nullable(String))</td>
+      <td id="T_ae2f2_row15_col2" class="data row15 col2" >3400</td>
+      <td id="T_ae2f2_row15_col3" class="data row15 col3" >0.26</td>
+      <td id="T_ae2f2_row15_col4" class="data row15 col4" >LowCardinality</td>
+      <td id="T_ae2f2_row15_col5" class="data row15 col5" >1294757</td>
+      <td id="T_ae2f2_row15_col6" class="data row15 col6" >0</td>
+      <td id="T_ae2f2_row15_col7" class="data row15 col7" >0.00</td>
+      <td id="T_ae2f2_row15_col8" class="data row15 col8" ></td>
     </tr>
     <tr>
-      <th id="T_4e972_level0_row16" class="row_heading level0 row16" >16</th>
-      <td id="T_4e972_row16_col0" class="data row16 col0" >parse_date</td>
-      <td id="T_4e972_row16_col1" class="data row16 col1" >DateTime</td>
-      <td id="T_4e972_row16_col2" class="data row16 col2" >817</td>
-      <td id="T_4e972_row16_col3" class="data row16 col3" >0.06</td>
-      <td id="T_4e972_row16_col4" class="data row16 col4" ></td>
-      <td id="T_4e972_row16_col5" class="data row16 col5" >1294757</td>
-      <td id="T_4e972_row16_col6" class="data row16 col6" >0</td>
-      <td id="T_4e972_row16_col7" class="data row16 col7" >0.00</td>
-      <td id="T_4e972_row16_col8" class="data row16 col8" ></td>
+      <th id="T_ae2f2_level0_row16" class="row_heading level0 row16" >16</th>
+      <td id="T_ae2f2_row16_col0" class="data row16 col0" >parse_date</td>
+      <td id="T_ae2f2_row16_col1" class="data row16 col1" >DateTime</td>
+      <td id="T_ae2f2_row16_col2" class="data row16 col2" >817</td>
+      <td id="T_ae2f2_row16_col3" class="data row16 col3" >0.06</td>
+      <td id="T_ae2f2_row16_col4" class="data row16 col4" ></td>
+      <td id="T_ae2f2_row16_col5" class="data row16 col5" >1294757</td>
+      <td id="T_ae2f2_row16_col6" class="data row16 col6" >0</td>
+      <td id="T_ae2f2_row16_col7" class="data row16 col7" >0.00</td>
+      <td id="T_ae2f2_row16_col8" class="data row16 col8" ></td>
     </tr>
   </tbody>
 </table>
@@ -540,7 +710,7 @@ rez_styled
 
 
 
-    time: 280 ms (started: 2026-05-30 18:23:26 +03:00)
+    time: 633 ms (started: 2026-05-31 07:20:50 +03:00)
 
 
 ## Кол-во Null значений от общего кол-ва значений
@@ -584,7 +754,7 @@ null_dict_df
 
 
 
-    time: 8.51 ms (started: 2026-05-30 18:22:23 +03:00)
+    time: 10.3 ms (started: 2026-05-31 07:20:51 +03:00)
 
 
 
@@ -684,7 +854,7 @@ result.head()
 
 
 
-    time: 166 ms (started: 2026-05-30 18:22:23 +03:00)
+    time: 226 ms (started: 2026-05-31 07:20:51 +03:00)
 
 
 
@@ -707,7 +877,7 @@ plt.show()
     
 
 
-    time: 279 ms (started: 2026-05-30 18:22:23 +03:00)
+    time: 539 ms (started: 2026-05-31 07:20:51 +03:00)
 
 
 
@@ -730,7 +900,7 @@ plt.show()
     
 
 
-    time: 144 ms (started: 2026-05-30 18:22:23 +03:00)
+    time: 250 ms (started: 2026-05-31 07:20:51 +03:00)
 
 
 ## Формирование отчета аналогичного `pandas .describe()`
@@ -838,7 +1008,7 @@ with pd.option_context(
     <tr>
       <th>50%</th>
       <td>1.70</td>
-      <td>141000.00</td>
+      <td>143000.00</td>
       <td>125.00</td>
       <td>955000.00</td>
       <td>2011.00</td>
@@ -864,7 +1034,7 @@ with pd.option_context(
 </div>
 
 
-    time: 410 ms (started: 2026-05-30 18:22:23 +03:00)
+    time: 518 ms (started: 2026-05-31 07:20:52 +03:00)
 
 
 ## Формирование нескольких выборок для формирования отчета аналогичного `pandas .describe()`
@@ -907,7 +1077,7 @@ for group_id in range(1, sample_count + 1):
 
 ```
 
-    time: 3.75 s (started: 2026-05-30 18:22:24 +03:00)
+    time: 5.71 s (started: 2026-05-31 07:20:52 +03:00)
 
 
 
@@ -947,114 +1117,114 @@ dfs[0].sample(5)
   </thead>
   <tbody>
     <tr>
-      <th>38183</th>
-      <td>Toyota</td>
-      <td>Harrier</td>
+      <th>10476</th>
+      <td>BMW</td>
+      <td>X3</td>
+      <td>Джип 5 дв.</td>
+      <td>Синий</td>
+      <td>Дизель</td>
+      <td>&lt;NA&gt;</td>
+      <td>&lt;NA&gt;</td>
+      <td>АКПП</td>
+      <td>&lt;NA&gt;</td>
+      <td>4950000</td>
+      <td>&lt;NA&gt;</td>
+      <td>None</td>
+      <td>&lt;NA&gt;</td>
+      <td>NaN</td>
+      <td>2023-06-09</td>
+      <td>Москва</td>
+      <td>2023-06-09 19:00:00</td>
+      <td>1</td>
+      <td>10477</td>
+    </tr>
+    <tr>
+      <th>10278</th>
+      <td>Hyundai</td>
+      <td>i30</td>
+      <td>Хэтчбек 5 дв.</td>
+      <td>Голубой</td>
+      <td>Бензин</td>
+      <td>2012</td>
+      <td>100000</td>
+      <td>АКПП</td>
+      <td>130</td>
+      <td>988000</td>
+      <td>1.6 AT Comfort 5dr.</td>
+      <td>False</td>
+      <td>G4FG</td>
+      <td>1.6</td>
+      <td>2023-05-13</td>
+      <td>Красноярск</td>
+      <td>2023-05-13 12:00:00</td>
+      <td>1</td>
+      <td>10279</td>
+    </tr>
+    <tr>
+      <th>11922</th>
+      <td>Kia</td>
+      <td>Picanto</td>
+      <td>Хэтчбек 5 дв.</td>
+      <td>Желтый</td>
+      <td>Бензин</td>
+      <td>&lt;NA&gt;</td>
+      <td>&lt;NA&gt;</td>
+      <td>АКПП</td>
+      <td>85</td>
+      <td>830000</td>
+      <td>&lt;NA&gt;</td>
+      <td>None</td>
+      <td>&lt;NA&gt;</td>
+      <td>NaN</td>
+      <td>2023-05-19</td>
+      <td>Тамбов</td>
+      <td>2023-06-08 17:00:00</td>
+      <td>1</td>
+      <td>11923</td>
+    </tr>
+    <tr>
+      <th>8089</th>
+      <td>EXEED</td>
+      <td>VX</td>
       <td>Джип 5 дв.</td>
       <td>Белый</td>
       <td>Бензин</td>
-      <td>2017</td>
-      <td>9000</td>
-      <td>Вариатор</td>
-      <td>151</td>
-      <td>2300000</td>
-      <td>2.0 Premium Metal and Leather Package</td>
-      <td>False</td>
-      <td>3ZR-FAE</td>
-      <td>2.0</td>
-      <td>2023-05-01</td>
-      <td>Якутск</td>
-      <td>2023-05-06 00:00:00</td>
-      <td>1</td>
-      <td>12288</td>
-    </tr>
-    <tr>
-      <th>38290</th>
-      <td>Volkswagen</td>
-      <td>Touareg</td>
-      <td>Джип 5 дв.</td>
-      <td>Коричневый</td>
-      <td>Бензин</td>
+      <td>2022</td>
       <td>&lt;NA&gt;</td>
-      <td>122000</td>
-      <td>АКПП</td>
+      <td>Робот</td>
       <td>249</td>
-      <td>1997000</td>
-      <td>&lt;NA&gt;</td>
-      <td>None</td>
-      <td>&lt;NA&gt;</td>
-      <td>NaN</td>
-      <td>2023-05-29</td>
-      <td>Москва</td>
-      <td>2023-05-29 23:00:00</td>
+      <td>5608900</td>
+      <td>2.0 DCT AWD President Limited Edition</td>
+      <td>True</td>
+      <td>F4J20C</td>
+      <td>2.0</td>
+      <td>2023-06-04</td>
+      <td>Санкт-Петербург</td>
+      <td>2023-06-04 21:00:00</td>
       <td>1</td>
-      <td>12395</td>
+      <td>8090</td>
     </tr>
     <tr>
-      <th>36870</th>
-      <td>Toyota</td>
-      <td>Kluger V</td>
+      <th>3144</th>
+      <td>УАЗ</td>
+      <td>Патриот</td>
       <td>Джип 5 дв.</td>
-      <td>Белый</td>
+      <td>Серый</td>
       <td>Бензин</td>
-      <td>2000</td>
-      <td>1000</td>
+      <td>2020</td>
+      <td>&lt;NA&gt;</td>
       <td>АКПП</td>
-      <td>160</td>
-      <td>780000</td>
-      <td>2.4 V</td>
+      <td>150</td>
+      <td>1666000</td>
+      <td>2.7 AT Люкс Премиум</td>
       <td>False</td>
-      <td>2AZ-FE</td>
-      <td>2.4</td>
-      <td>2023-05-31</td>
-      <td>Улан-Удэ</td>
-      <td>2023-05-31 08:00:00</td>
+      <td>ЗМЗ-409051 ZMZ Pro</td>
+      <td>2.7</td>
+      <td>2023-05-12</td>
+      <td>Ростов-на-Дону</td>
+      <td>2023-05-14 00:00:00</td>
       <td>1</td>
-      <td>10975</td>
-    </tr>
-    <tr>
-      <th>31705</th>
-      <td>Nissan</td>
-      <td>AD</td>
-      <td>Универсал</td>
-      <td>Белый</td>
-      <td>Бензин</td>
-      <td>&lt;NA&gt;</td>
-      <td>&lt;NA&gt;</td>
-      <td>АКПП</td>
-      <td>100</td>
-      <td>185000</td>
-      <td>&lt;NA&gt;</td>
-      <td>None</td>
-      <td>&lt;NA&gt;</td>
-      <td>NaN</td>
-      <td>2023-06-21</td>
-      <td>Омск</td>
-      <td>2023-06-21 18:00:00</td>
-      <td>1</td>
-      <td>5810</td>
-    </tr>
-    <tr>
-      <th>26712</th>
-      <td>Mitsubishi</td>
-      <td>Outlander</td>
-      <td>Джип 5 дв.</td>
-      <td>Черный</td>
-      <td>Бензин</td>
-      <td>&lt;NA&gt;</td>
-      <td>411000</td>
-      <td>Вариатор</td>
-      <td>170</td>
-      <td>965000</td>
-      <td>&lt;NA&gt;</td>
-      <td>None</td>
-      <td>&lt;NA&gt;</td>
-      <td>NaN</td>
-      <td>2023-05-05</td>
-      <td>Москва</td>
-      <td>2023-05-05 15:00:00</td>
-      <td>1</td>
-      <td>817</td>
+      <td>3145</td>
     </tr>
   </tbody>
 </table>
@@ -1062,7 +1232,7 @@ dfs[0].sample(5)
 
 
 
-    time: 12.4 ms (started: 2026-05-30 18:22:28 +03:00)
+    time: 15.5 ms (started: 2026-05-31 07:20:58 +03:00)
 
 
 ## Получение описательной статистики по выборкам
@@ -1126,21 +1296,21 @@ with pd.option_context(
       <td>1273353.00</td>
       <td>1294757.00</td>
       <td>724644.00</td>
-      <td>7247.00</td>
-      <td>7793.00</td>
-      <td>12756.00</td>
+      <td>7166.00</td>
+      <td>7760.00</td>
+      <td>12716.00</td>
       <td>12948.00</td>
-      <td>7311.00</td>
-      <td>7200.00</td>
-      <td>7774.00</td>
-      <td>12719.00</td>
+      <td>7230.00</td>
+      <td>7162.00</td>
+      <td>7753.00</td>
+      <td>12736.00</td>
       <td>12948.00</td>
-      <td>7271.00</td>
-      <td>7168.00</td>
-      <td>7701.00</td>
-      <td>12733.00</td>
+      <td>7234.00</td>
+      <td>7236.00</td>
+      <td>7808.00</td>
+      <td>12750.00</td>
       <td>12948.00</td>
-      <td>7231.00</td>
+      <td>7299.00</td>
     </tr>
     <tr>
       <th>mean</th>
@@ -1150,20 +1320,20 @@ with pd.option_context(
       <td>1444357.82</td>
       <td>2009.68</td>
       <td>1.95</td>
-      <td>155451.69</td>
-      <td>140.87</td>
-      <td>1410442.02</td>
-      <td>2009.46</td>
-      <td>1.97</td>
-      <td>155972.99</td>
-      <td>142.57</td>
-      <td>1442499.13</td>
+      <td>154122.42</td>
+      <td>141.46</td>
+      <td>1456683.85</td>
+      <td>2009.86</td>
+      <td>1.93</td>
+      <td>154579.52</td>
+      <td>141.46</td>
+      <td>1435007.26</td>
+      <td>2009.77</td>
+      <td>1.95</td>
+      <td>154560.32</td>
+      <td>141.65</td>
+      <td>1453412.82</td>
       <td>2009.73</td>
-      <td>1.96</td>
-      <td>156088.43</td>
-      <td>141.57</td>
-      <td>1464307.10</td>
-      <td>2009.60</td>
     </tr>
     <tr>
       <th>std</th>
@@ -1172,21 +1342,21 @@ with pd.option_context(
       <td>65.64</td>
       <td>1970256.65</td>
       <td>9.37</td>
-      <td>0.77</td>
-      <td>101787.10</td>
-      <td>64.03</td>
-      <td>1859575.82</td>
-      <td>9.43</td>
       <td>0.75</td>
-      <td>102375.79</td>
-      <td>65.65</td>
-      <td>1897564.57</td>
-      <td>9.29</td>
+      <td>101077.27</td>
+      <td>65.22</td>
+      <td>1979440.57</td>
+      <td>9.22</td>
+      <td>0.73</td>
+      <td>101199.30</td>
+      <td>65.25</td>
+      <td>1842065.86</td>
+      <td>9.42</td>
       <td>0.76</td>
-      <td>103233.83</td>
-      <td>66.94</td>
-      <td>2212324.01</td>
-      <td>9.18</td>
+      <td>102260.00</td>
+      <td>66.60</td>
+      <td>1969751.69</td>
+      <td>9.40</td>
     </tr>
     <tr>
       <th>min</th>
@@ -1195,20 +1365,20 @@ with pd.option_context(
       <td>1.00</td>
       <td>270.00</td>
       <td>1936.00</td>
-      <td>0.50</td>
+      <td>0.70</td>
+      <td>1000.00</td>
+      <td>1.00</td>
+      <td>6000.00</td>
+      <td>1936.00</td>
+      <td>0.60</td>
       <td>1000.00</td>
       <td>33.00</td>
-      <td>23000.00</td>
+      <td>15000.00</td>
       <td>1953.00</td>
-      <td>0.60</td>
+      <td>0.70</td>
       <td>1000.00</td>
-      <td>27.00</td>
-      <td>6000.00</td>
-      <td>1953.00</td>
-      <td>0.60</td>
-      <td>1000.00</td>
-      <td>30.00</td>
-      <td>10000.00</td>
+      <td>1.00</td>
+      <td>15000.00</td>
       <td>1953.00</td>
     </tr>
     <tr>
@@ -1221,40 +1391,40 @@ with pd.option_context(
       <td>1.50</td>
       <td>80000.00</td>
       <td>98.00</td>
-      <td>400000.00</td>
-      <td>2003.00</td>
-      <td>1.50</td>
-      <td>82000.00</td>
-      <td>98.00</td>
-      <td>428500.00</td>
+      <td>430000.00</td>
       <td>2004.00</td>
       <td>1.50</td>
-      <td>83000.00</td>
+      <td>80000.00</td>
       <td>98.00</td>
-      <td>425000.00</td>
+      <td>420000.00</td>
+      <td>2003.25</td>
+      <td>1.50</td>
+      <td>81000.00</td>
+      <td>98.00</td>
+      <td>420000.00</td>
       <td>2003.00</td>
     </tr>
     <tr>
       <th>50%</th>
       <td>1.70</td>
-      <td>141000.00</td>
+      <td>143000.00</td>
       <td>125.00</td>
       <td>955000.00</td>
       <td>2011.00</td>
       <td>1.70</td>
-      <td>145000.00</td>
+      <td>142000.00</td>
       <td>128.00</td>
-      <td>865000.00</td>
+      <td>875000.00</td>
       <td>2011.00</td>
-      <td>1.80</td>
-      <td>146000.00</td>
-      <td>129.00</td>
-      <td>870000.00</td>
+      <td>1.60</td>
+      <td>142000.00</td>
+      <td>128.00</td>
+      <td>880000.00</td>
       <td>2011.00</td>
       <td>1.70</td>
       <td>143000.00</td>
       <td>128.00</td>
-      <td>870000.00</td>
+      <td>875000.00</td>
       <td>2011.00</td>
     </tr>
     <tr>
@@ -1265,20 +1435,20 @@ with pd.option_context(
       <td>2099000.00</td>
       <td>2017.00</td>
       <td>2.00</td>
-      <td>211000.00</td>
-      <td>160.00</td>
-      <td>1720000.00</td>
+      <td>210000.00</td>
+      <td>163.00</td>
+      <td>1795000.00</td>
       <td>2017.00</td>
-      <td>2.10</td>
-      <td>214000.00</td>
-      <td>167.00</td>
+      <td>2.00</td>
+      <td>210000.00</td>
+      <td>166.00</td>
       <td>1750000.00</td>
       <td>2017.00</td>
       <td>2.00</td>
-      <td>211000.00</td>
-      <td>163.00</td>
-      <td>1750000.00</td>
-      <td>2017.00</td>
+      <td>210000.00</td>
+      <td>165.00</td>
+      <td>1790000.00</td>
+      <td>2018.00</td>
     </tr>
     <tr>
       <th>max</th>
@@ -1287,20 +1457,20 @@ with pd.option_context(
       <td>1000.00</td>
       <td>150000000.00</td>
       <td>2023.00</td>
-      <td>6.70</td>
+      <td>6.20</td>
       <td>1000000.00</td>
-      <td>702.00</td>
-      <td>30500000.00</td>
+      <td>712.00</td>
+      <td>33500000.00</td>
       <td>2023.00</td>
       <td>6.40</td>
       <td>1000000.00</td>
-      <td>693.00</td>
-      <td>39000000.00</td>
+      <td>720.00</td>
+      <td>38123320.00</td>
       <td>2023.00</td>
       <td>6.70</td>
       <td>1000000.00</td>
-      <td>702.00</td>
-      <td>99999999.00</td>
+      <td>712.00</td>
+      <td>43170000.00</td>
       <td>2023.00</td>
     </tr>
   </tbody>
@@ -1308,7 +1478,7 @@ with pd.option_context(
 </div>
 
 
-    time: 50 ms (started: 2026-05-30 18:22:28 +03:00)
+    time: 44.4 ms (started: 2026-05-31 07:20:58 +03:00)
 
 
 ## Сравнение описательной статистики по выборкам с общими данными на предмет наличия/отсутствия существенных расхождений
@@ -1371,7 +1541,7 @@ with pd.option_context(
       <td>1294757.00</td>
       <td>724644.00</td>
       <td>99.00</td>
-      <td>99.00</td>
+      <td>98.99</td>
       <td>99.00</td>
       <td>99.00</td>
       <td>99.00</td>
@@ -1383,11 +1553,11 @@ with pd.option_context(
       <td>141.56</td>
       <td>1444357.82</td>
       <td>2009.68</td>
-      <td>-0.48</td>
-      <td>-0.61</td>
-      <td>-0.08</td>
-      <td>0.37</td>
-      <td>0.00</td>
+      <td>0.46</td>
+      <td>0.31</td>
+      <td>0.02</td>
+      <td>-0.28</td>
+      <td>-0.01</td>
     </tr>
     <tr>
       <th>std</th>
@@ -1396,11 +1566,11 @@ with pd.option_context(
       <td>65.64</td>
       <td>1970256.65</td>
       <td>9.37</td>
-      <td>-0.44</td>
-      <td>-1.71</td>
-      <td>0.15</td>
-      <td>-0.99</td>
-      <td>0.70</td>
+      <td>1.54</td>
+      <td>-0.77</td>
+      <td>-0.07</td>
+      <td>2.02</td>
+      <td>0.24</td>
     </tr>
     <tr>
       <th>min</th>
@@ -1423,22 +1593,22 @@ with pd.option_context(
       <td>468750.00</td>
       <td>2004.00</td>
       <td>0.00</td>
-      <td>-2.08</td>
+      <td>-0.42</td>
       <td>0.00</td>
-      <td>10.86</td>
+      <td>9.69</td>
       <td>0.03</td>
     </tr>
     <tr>
       <th>50%</th>
       <td>1.70</td>
-      <td>141000.00</td>
+      <td>143000.00</td>
       <td>125.00</td>
       <td>955000.00</td>
       <td>2011.00</td>
-      <td>-1.96</td>
-      <td>-2.60</td>
-      <td>-2.67</td>
-      <td>9.08</td>
+      <td>1.96</td>
+      <td>0.47</td>
+      <td>-2.40</td>
+      <td>8.20</td>
       <td>0.00</td>
     </tr>
     <tr>
@@ -1448,11 +1618,11 @@ with pd.option_context(
       <td>160.00</td>
       <td>2099000.00</td>
       <td>2017.00</td>
-      <td>-1.67</td>
       <td>0.00</td>
-      <td>-2.08</td>
-      <td>17.10</td>
-      <td>0.00</td>
+      <td>0.94</td>
+      <td>-2.92</td>
+      <td>15.28</td>
+      <td>-0.02</td>
     </tr>
     <tr>
       <th>max</th>
@@ -1472,7 +1642,7 @@ with pd.option_context(
 </div>
 
 
-    time: 30 ms (started: 2026-05-30 18:22:28 +03:00)
+    time: 30.8 ms (started: 2026-05-31 07:20:58 +03:00)
 
 
 
@@ -1526,7 +1696,7 @@ plt.show()
     
 
 
-    time: 179 ms (started: 2026-05-30 18:22:28 +03:00)
+    time: 170 ms (started: 2026-05-31 07:20:58 +03:00)
 
 
 
@@ -1552,7 +1722,7 @@ plt.show()
     
 
 
-    time: 352 ms (started: 2026-05-30 18:22:28 +03:00)
+    time: 310 ms (started: 2026-05-31 07:20:58 +03:00)
 
 
 
@@ -1607,7 +1777,7 @@ plt.show()
     
 
 
-    time: 5.4 s (started: 2026-05-30 18:22:28 +03:00)
+    time: 5.16 s (started: 2026-05-31 07:20:59 +03:00)
 
 
 
@@ -1617,6 +1787,6 @@ total_time = end_time - start_time
 print(f"Общее время выполнения: {total_time:.4f} секунд")
 ```
 
-    Общее время выполнения: 11.7921 секунд
-    time: 556 μs (started: 2026-05-30 18:22:34 +03:00)
+    Общее время выполнения: 14.6952 секунд
+    time: 664 μs (started: 2026-05-31 07:21:04 +03:00)
 

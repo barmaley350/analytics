@@ -73,18 +73,27 @@ ls -alhS datasets/raw_data/cars | grep -v '^d' | xclip -sel clip
 ```
 ```
 -rw-rw-r-- 1 home home 2.0G May 20 08:55 cars_sales.csv
--rw-rw-r-- 1 home home 250M Jun  1 21:13 cars_sales.parquet
+-rw-rw-r-- 1 home home 1.9G Jun  2 01:15 cars_sales_none.parquet
+-rw-rw-r-- 1 home home 639M Jun  2 01:15 cars_sales_snappy.parquet
+-rw-rw-r-- 1 home home 532M Jun  2 01:15 cars_sales_lz4.parquet
+-rw-rw-r-- 1 home home 387M Jun  2 01:15 cars_sales_gzip.parquet
+-rw-rw-r-- 1 home home 269M Jun  2 01:14 cars_sales_brotli.parquet
+-rw-rw-r-- 1 home home 250M Jun  2 01:15 cars_sales_zstd.parquet
 ```
 ### Кол-во сток в файле
 ```
-./clickhouse local -q "SELECT count() FROM file('./datasets/raw_data/cars/cars_sales.parquet', Parquet)"
+./clickhouse local \
+    -q "SELECT count() \
+    FROM file('./datasets/raw_data/cars/cars_sales_zstd.parquet', Parquet)"
 ```
 ```
 1294757
 ```
 ### Кол-во столбцов в файле
 ```
-./clickhouse local -q "DESCRIBE file('./datasets/raw_data/cars/cars_sales.parquet', Parquet)" | wc -l
+./clickhouse local \
+    -q "DESCRIBE file('./datasets/raw_data/cars/cars_sales_zstd.parquet', Parquet)" \
+    | wc -l
 ```
 ```
 18
@@ -92,7 +101,12 @@ ls -alhS datasets/raw_data/cars | grep -v '^d' | xclip -sel clip
 ## Файл `Liquor_Sales.csv`
 ### Конвертируем `csv` в `parquet`
 ```
-./clickhouse local --max_memory_usage=2G --max_threads=1 -q "SELECT * FROM file ('./datasets/raw_data/liquor/Liquor_Sales.csv', CSVWithNames) INTO OUTFILE './datasets/raw_data/liquor/Liquor_Sales.parquet' FORMAT Parquet"
+./clickhouse local \
+    --max_memory_usage=2G \
+    --max_threads=1 \
+    --output_format_parquet_compression=zstd \
+    -q "SELECT * FROM file('./datasets/raw_data/liquor/Liquor_Sales.csv', 'CSVWithNames') \
+    INTO OUTFILE './datasets/raw_data/liquor/Liquor_Sales_zstd.parquet' FORMAT Parquet"
 ```
 ### Вывод статистики `/usr/bin/time -v`
 ```
@@ -126,19 +140,28 @@ ls -alhS datasets/raw_data/liquor | grep -v '^d' | xclip -sel clip
 ```
 ```
 -rw-rw-r-- 1 home home 4.5G May 29 22:59 Liquor_Sales.csv
--rw-rw-r-- 1 home home 551M Jun  1 21:29 Liquor_Sales.parquet
+-rw-rw-r-- 1 home home 884M Jun  2 01:11 Liquor_Sales_none.parquet
+-rw-rw-r-- 1 home home 679M Jun  2 01:12 Liquor_Sales_lz4.parquet
+-rw-rw-r-- 1 home home 669M Jun  2 01:12 Liquor_Sales_snappy.parquet
+-rw-rw-r-- 1 home home 556M Jun  2 01:10 Liquor_Sales_brotli.parquet
+-rw-rw-r-- 1 home home 555M Jun  2 01:10 Liquor_Sales_gzip.parquet
+-rw-rw-r-- 1 home home 551M Jun  2 01:11 Liquor_Sales_zstd.parquet
 ```
 
 ### Кол-во сток в файле
 ```
-./clickhouse local -q "SELECT count() FROM file('./datasets/raw_data/liquor/Liquor_Sales.parquet', Parquet)"
+./clickhouse local \
+    -q "SELECT count() \
+    FROM file('./datasets/raw_data/liquor/Liquor_Sales_zstd.parquet', Parquet)"
 ```
 ```
 19666763
 ```
 ### Кол-во столбцов в файле
 ```
-./clickhouse local -q "DESCRIBE file('./datasets/raw_data/liquor/Liquor_Sales.parquet', Parquet)" | wc -l
+./clickhouse local \
+    -q "DESCRIBE file('./datasets/raw_data/liquor/Liquor_Sales_zstd.parquet', Parquet)" \
+    | wc -l
 ```
 ```
 24

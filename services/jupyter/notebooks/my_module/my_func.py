@@ -64,5 +64,8 @@ def get_uniq_estimation(row: pd.Series, threshold: int = 30) -> str:
     field_type = row["type"]
 
     return (
-        "LowCardinality" if null_percent <= threshold and "String" in field_type else ""
+        "LowCardinality"
+        if null_percent <= threshold
+        and ("String" in field_type or "Date" in field_type)
+        else ""
     )

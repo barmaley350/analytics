@@ -160,6 +160,19 @@ SETTINGS format_csv_delimiter = ',';
 clickhouse-client < ./services/clickhouse/sql/cars2.sql 
 ```
 ## Размер таблиц
+```sql
+clickhouse-client -q "SELECT
+    concat(database, '.', table) AS table,
+    formatReadableSize(sum(bytes_on_disk)) AS size,
+    sum(bytes_on_disk) AS bytes_size,
+    sum(rows) AS rows,
+    any(engine) AS engine
+FROM system.parts
+WHERE active AND table LIKE 'cars%'
+GROUP BY database, table
+ORDER BY bytes_size DESC
+FORMAT Markdown;"
+```
 | table | size | bytes_size | rows | engine |
 |:-|:-|-:|-:|:-|
 | cars.cars_sales_parquet | 579.83 MiB | 607991068 | 1294757 | MergeTree |

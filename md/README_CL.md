@@ -36,7 +36,9 @@
 	Exit status: 0
 ```
 ### Размеры файлов 
-
+```
+ls -alhS datasets/raw_data/cars | grep -v '^d' | xclip -sel clip
+```
 ```
 -rw-rw-r-- 1 home home 2.0G May 20 08:55 cars_sales.csv
 -rw-rw-r-- 1 home home 250M Jun  1 21:13 cars_sales.parquet
@@ -87,6 +89,9 @@
 ```
 
 ### Размеры файлов
+```
+ls -alhS datasets/raw_data/liquor | grep -v '^d' | xclip -sel clip
+```
 ```
 -rw-rw-r-- 1 home home 4.5G May 29 22:59 Liquor_Sales.csv
 -rw-rw-r-- 1 home home 551M Jun  1 21:29 Liquor_Sales.parquet

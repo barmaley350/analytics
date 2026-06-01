@@ -1,14 +1,11 @@
 # Описание
 ## Краткое описание
-Приводится пример анализа данных на основе датасета 
-[https://www.kaggle.com/datasets/ekibee/car-sales-information](https://www.kaggle.com/datasets/ekibee/car-sales-information)
+Приводится пример анализа данных на основе датасетов 
 
-Данный датасет содержит информацию о продаже машин за определенные годы
-по определенным регионам. 
-
-Датасет содежит `1 294 757` записей и `19` параметров.
-Общий объем данных `2.14 Gb`.
-
+| Dataset | Размер файла | Кол-во строк | Кол-во столбцов | Описание |
+|---------|---------|-----------|---------------|---------------|
+|[https://www.kaggle.com/datasets/ekibee/car-sales-information](https://www.kaggle.com/datasets/ekibee/car-sales-information) | `2.0G` | `1 294 757` | `19`| |
+|[https://www.kaggle.com/datasets/residentmario/iowa-liquor-sales](https://www.kaggle.com/datasets/residentmario/iowa-liquor-sales) | `4.5G` | `19 666 763` | `24`| |
 ## Общая схема работы
 ![png](files/md/main.png?1)
 

@@ -1,6 +1,5 @@
 # Работа с `clickhouse-local`
-## Конвертируем файл из `csv` в `parquet`
-Для ускорения работы с локальным файлом его нужно конвертировать из `csv` в `parquet`
+## Конвертируем файлы из `csv` в `parquet`
 
 > [!NOTE]
 > Используйте `--max_memory_usage=2G` и `--max_threads=1` для слабых компьютеров
@@ -40,7 +39,7 @@
 	Page size (bytes): 4096
 	Exit status: 0
 ```
-### Размеры файлов 
+### Размеры `parquet` файлов в зависимости от типа компрессии
 ```
 ls -alhS datasets/raw_data/cars | grep -v '^d' | xclip -sel clip
 ```
@@ -53,7 +52,7 @@ ls -alhS datasets/raw_data/cars | grep -v '^d' | xclip -sel clip
 -rw-rw-r-- 1 home home 269M Jun  2 01:14 cars_sales_brotli.parquet
 -rw-rw-r-- 1 home home 250M Jun  2 01:15 cars_sales_zstd.parquet
 ```
-### Кол-во сток в файле
+### Кол-во строк в файле
 ```
 ./clickhouse local \
     -q "SELECT count() \
@@ -107,7 +106,7 @@ ls -alhS datasets/raw_data/cars | grep -v '^d' | xclip -sel clip
 	Exit status: 0
 ```
 
-### Размеры файлов
+### Размеры `parquet` файлов в зависимости от типа компрессии
 ```
 ls -alhS datasets/raw_data/liquor | grep -v '^d' | xclip -sel clip
 ```
@@ -121,7 +120,7 @@ ls -alhS datasets/raw_data/liquor | grep -v '^d' | xclip -sel clip
 -rw-rw-r-- 1 home home 551M Jun  2 01:11 Liquor_Sales_zstd.parquet
 ```
 
-### Кол-во сток в файле
+### Кол-во строк в файле
 ```
 ./clickhouse local \
     -q "SELECT count() \

@@ -81,6 +81,8 @@ DROP DATABASE IF EXISTS cars;
 
 CREATE DATABASE IF NOT EXISTS cars;
 
+DROP TABLE IF EXISTS cars.cars_sales;
+
 CREATE TABLE IF NOT EXISTS cars.cars_sales (
     brand Nullable(String),
     name Nullable(String),

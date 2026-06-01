@@ -5,6 +5,7 @@ test.md
 .env
 dell.txt
 dell.sql
+dell.sh
 # Clickhouse local
 clickhouse
 # Data

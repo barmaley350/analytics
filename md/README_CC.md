@@ -159,3 +159,9 @@ SETTINGS format_csv_delimiter = ',';
 ```
 clickhouse-client < ./services/clickhouse/sql/cars2.sql 
 ```
+## Размер таблиц
+| table | size | bytes_size | rows | engine |
+|:-|:-|-:|-:|:-|
+| cars.cars_sales_parquet | 579.83 MiB | 607991068 | 1294757 | MergeTree |
+| cars.cars_sales_csv | 579.63 MiB | 607788085 | 1294757 | MergeTree |
+| cars.cars_sales | 31.61 MiB | 33149835 | 1294757 | MergeTree |

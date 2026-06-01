@@ -35,7 +35,12 @@
 ## Файл `cars_sales.csv`
 ### Конвертируем `csv` в `parquet`
 ```
-./clickhouse local --max_memory_usage=2G --max_threads=1 -q "SELECT * FROM file ('./datasets/raw_data/cars/cars_sales.csv', CSVWithNames) INTO OUTFILE './datasets/raw_data/cars/cars_sales.parquet' FORMAT Parquet"
+./clickhouse local \ 
+    --max_memory_usage=2G \
+    --max_threads=1 \
+    --output_format_parquet_compression=zstd \
+    -q "SELECT * FROM file ('./datasets/raw_data/cars/cars_sales.csv', CSVWithNames) \
+    INTO OUTFILE './datasets/raw_data/cars/cars_sales_zstd.parquet' FORMAT Parquet"
 ```
 ### Вывод статистики `/usr/bin/time -v`
 ```

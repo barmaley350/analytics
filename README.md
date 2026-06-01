@@ -6,7 +6,7 @@
 
 | Dataset | Размер файла | Кол-во строк | Кол-во столбцов | Описание |
 |---------|---------|-----------|---------------|---------------|
-|[Kaggle Url](https://www.kaggle.com/datasets/ekibee/car-sales-information) | `2.0G` | `1 294 757` | `19`| Это набор данных о рекламных объявлениях о продаже автомобилей в России с разбивкой по регионам |
+|[Kaggle Url](https://www.kaggle.com/datasets/ekibee/car-sales-information) | `2.0G` | `1 294 757` | `19`| Продажа автомобилей в России |
 |[Kaggle Url](https://www.kaggle.com/datasets/residentmario/iowa-liquor-sales) | `4.5G` | `19 666 763` | `24`| Продажа спиртных напитков в Айове |
 ## Общая схема работы
 ![png](files/md/main.png?1)

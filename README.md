@@ -168,7 +168,7 @@ ls -alhS datasets/raw_data/liquor | grep -v '^d' | xclip -sel clip
 
 # Jupyter Notebook - ChDB
 Предварительны анализ файла без загрузки данных в `clickhouse`.<br>
-Для работы с файлом используется `ChDb` 
+Для работы с файлом используется `ChDb` https://clickhouse.com/docs/chdb
 
 
 ```python
@@ -223,11 +223,11 @@ if hostname == "home-NMH-WDX9":
     in_docker = False
 
 if in_docker:
-    file = (Path(Path.cwd().parent) / "db/raw_data/cars/cars_sales.parquet").as_posix()
+    file = (Path(Path.cwd().parent) / "db/raw_data/cars/cars_sales_zstd.parquet").as_posix()
 else:
     file = (
         Path(Path.cwd().parent.parent.parent)
-        / "datasets/raw_data/cars/cars_sales.parquet"
+        / "datasets/raw_data/cars/cars_sales_zstd.parquet"
     ).as_posix()
 
 dsf = ds.read_parquet(file)  # type: ignore

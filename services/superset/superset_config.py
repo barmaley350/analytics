@@ -1,5 +1,31 @@
-SECRET_KEY = "2d9fd294aa390df0360036992ded4db6c30a962a3b05375c05a4e438ea40e433"
+import os
+from urllib.parse import quote_plus
+
+DB_TYPE = os.getenv("SUPERSET_DB_TYPE", "postgresql")
+DB_DRIVER = os.getenv("SUPERSET_DB_DRIVER", "psycopg2")
+DB_HOST = os.getenv("SUPERSET_DB_HOST", "localhost")
+DB_PORT = os.getenv("SUPERSET_DB_PORT", "5432")
+DB_NAME = os.getenv("SUPERSET_DB_NAME", "superset_metadata")
+DB_USER = os.getenv("SUPERSET_DB_USER", "superset_user")
+DB_PASSWORD = os.getenv("SUPERSET_DB_PASSWORD", "")
+DB_SSL_MODE = os.getenv("SUPERSET_DB_SSL_MODE", "prefer")
+SECRET_KEY = os.getenv("SUPERSET_SECRET_KEY", "")
+
 PREVENT_UNSAFE_DB_CONNECTIONS = False
+
+# Формируем строку подключения
+if DB_TYPE == "postgresql":
+    encoded_password = quote_plus(DB_PASSWORD) if DB_PASSWORD else ""
+    SQLALCHEMY_DATABASE_URI = (
+        f"postgresql+{DB_DRIVER}://{DB_USER}:{encoded_password}@"
+        f"{DB_HOST}:{DB_PORT}/{DB_NAME}?sslmode={DB_SSL_MODE}"
+    )
+else:
+    # Fallback на SQLite, если тип БД не распознан
+    SQLALCHEMY_DATABASE_URI = "sqlite:////app/database/superset.db"
+
+print("SQLALCHEMY_DATABASE_URI", SQLALCHEMY_DATABASE_URI)
+
 FEATURE_FLAGS = {
     "ENABLE_TEMPLATE_PROCESSING": True,
     "DRILL_TO_DETAIL": True,

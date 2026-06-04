@@ -35,6 +35,8 @@ services:
     volumes:
       - ./services/superset/data:/app/superset_home
       - ./datasets:/app/database
+    env_file:
+      - .env      
     restart: unless-stopped
     networks:
       - internal-net
@@ -48,8 +50,9 @@ services:
       - 5432:5432
     volumes:
       - ./services/postgres/db:/var/lib/postgresql/18/docker
+      - ./services/postgres/init:/docker-entrypoint-initdb.d
     env_file:
-      - ./services/postgres/.env
+      - .env
     restart: unless-stopped
     networks:
       - internal-net
@@ -78,7 +81,7 @@ services:
       - "8123:8123"
       - "9000:9000"
     env_file:
-      - ./services/clickhouse/.env
+      - .env
     volumes:
       - analytics-clickhouse-data-volume:/var/lib/clickhouse
       - analytics-clickhouse-logs-volume:/var/log/clickhouse-server

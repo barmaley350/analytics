@@ -36,13 +36,64 @@ services:
       - ./services/superset/data:/app/superset_home
       - ./datasets:/app/database
     env_file:
-      - .env      
+      - .env
+    depends_on:
+      - service.redis
+      - service.db_postgres  
+    command: ["/app/docker/entrypoints/run-server.sh"]    
     restart: unless-stopped
     networks:
       - internal-net
  
   # ----------------------------------------------------------------------------
-  # database
+  # apache superset worker
+  # ----------------------------------------------------------------------------
+  service.superset_worker:
+    build:
+      context: .
+      dockerfile: ./services/superset/Dockerfile
+    env_file:
+      - .env
+    restart: unless-stopped      
+    depends_on:
+      - service.redis
+      - service.superset
+    volumes:
+      - ./services/superset/celerybeat:/home/superset/celerybeat        
+    networks:
+      - internal-net      
+    command: celery -A superset.tasks.celery_app worker -l INFO -c 2
+  # ----------------------------------------------------------------------------
+  # apache superset beat
+  # ----------------------------------------------------------------------------
+  service.superset_beat:
+    build:
+      context: .
+      dockerfile: ./services/superset/Dockerfile
+    env_file:
+      - .env
+    depends_on:
+      - service.redis
+      - service.superset
+    volumes:
+      - ./services/superset/celerybeat:/home/superset/celerybeat      
+    restart: unless-stopped      
+    networks:
+      - internal-net      
+    command: celery -A superset.tasks.celery_app beat -s /home/superset/celerybeat/celerybeat-schedule -l INFO    
+
+  # ----------------------------------------------------------------------------
+  # Redis
+  # ----------------------------------------------------------------------------
+  service.redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    restart: unless-stopped      
+    networks:
+      - internal-net       
+  # ----------------------------------------------------------------------------
+  # PostreSQL
   # ----------------------------------------------------------------------------
   service.db_postgres:
     image: postgres

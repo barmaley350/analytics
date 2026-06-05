@@ -10,6 +10,7 @@ DB_USER = os.getenv("SUPERSET_DB_USER", "superset_user")
 DB_PASSWORD = os.getenv("SUPERSET_DB_PASSWORD", "")
 DB_SSL_MODE = os.getenv("SUPERSET_DB_SSL_MODE", "prefer")
 SECRET_KEY = os.getenv("SUPERSET_SECRET_KEY", "")
+CELERY_BROKER_URL = os.getenv("SUPERSET_CELERY_BROKER_URL", "")
 
 PREVENT_UNSAFE_DB_CONNECTIONS = False
 
@@ -20,11 +21,15 @@ if DB_TYPE == "postgresql":
         f"postgresql+{DB_DRIVER}://{DB_USER}:{encoded_password}@"
         f"{DB_HOST}:{DB_PORT}/{DB_NAME}?sslmode={DB_SSL_MODE}"
     )
+    CELERY_RESULT_BACKEND = (
+        f"db+postgresql+{DB_DRIVER}://{DB_USER}:{encoded_password}@"
+        f"{DB_HOST}:{DB_PORT}/{DB_NAME}?sslmode={DB_SSL_MODE}"
+    )
 else:
     # Fallback на SQLite, если тип БД не распознан
     SQLALCHEMY_DATABASE_URI = "sqlite:////app/database/superset.db"
+    CELERY_RESULT_BACKEND = "sqlite:////app/database/superset.db"
 
-print("SQLALCHEMY_DATABASE_URI", SQLALCHEMY_DATABASE_URI)
 
 FEATURE_FLAGS = {
     "ENABLE_TEMPLATE_PROCESSING": True,
@@ -51,3 +56,30 @@ SMTP_MAIL_FROM = "noreply@example.com"  # email отправителя
 
 ALERT_REPORTS_NOTIFICATION_DRY_RUN = False
 EMAIL_REPORTS_SUBJECT_PREFIX = "[Superset Report] "
+
+
+# Celery configuration
+class CeleryConfig:  # noqa: D101
+    broker_url = CELERY_BROKER_URL
+    result_backend = CELERY_RESULT_BACKEND
+    imports = (
+        "superset.sql_lab",
+        "superset.tasks",
+        "superset.tasks.thumbnails",
+    )
+    task_annotations = {  # noqa: RUF012
+        "sql_lab.get_sql_results": {"rate_limit": "100/s"},
+        "email_reports.send": {
+            "rate_limit": "1/s",
+            "time_limit": 120,
+            "soft_time_limit": 150,
+            "ignore_result": True,
+        },
+    }
+    worker_prefetch_multiplier = 10
+    task_acks_late = True
+    task_protocol = 1
+    worker_prefetch_enabled = False
+
+
+CELERY_CONFIG = CeleryConfig

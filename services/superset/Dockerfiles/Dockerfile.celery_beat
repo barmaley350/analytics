@@ -4,28 +4,18 @@ FROM apache/superset:latest
 
 USER root
 
-# RUN apt-get update && apt-get install -y --no-install-recommends bash
-# Set environment variable for Playwright
+RUN apt-get update && apt-get install -y --no-install-recommends bash 
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    bash \ 
-    wget \
-    curl
-# RUN apt-get install -y chromium-chromedriver
 RUN pip install --upgrade pip --no-cache-dir
 RUN pip install uv --no-cache-dir
-RUN uv venv --clear
+
+#RUN unset VIRTUAL_ENV && rm -rf /root/.config/uv /app/.venv
+
 RUN uv pip install psycopg2-binary 
-RUN uv pip install openpyxl 
-RUN uv pip install Authlib 
 RUN uv pip install Pillow 
-RUN uv pip install clickhouse-connect
-RUN uv pip install "celery[redis]"
-RUN uv pip install "apache-superset[fastmcp]"
+RUN uv pip install celery
+RUN uv pip install apache-superset
 
 USER superset
 
 COPY ./services/superset/config/superset_config.py /app/pythonpath/superset_config.py
-# COPY ./services/superset/config/playwright_screenshot.py /app/pythonpath/playwright_screenshot.py
-
-# CMD ["/app/docker/entrypoints/run-server.sh"]

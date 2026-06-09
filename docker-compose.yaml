@@ -58,7 +58,8 @@ services:
       - service.redis
       - service.superset
     volumes:
-      - ./services/superset/celerybeat:/home/superset/celerybeat        
+      - ./services/superset/celerybeat:/home/superset/celerybeat 
+      - ~/.cache/ms-playwright/:/usr/local/share/playwright-browsers
     networks:
       - internal-net      
     command: celery -A superset.tasks.celery_app worker -l INFO -c 2

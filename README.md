@@ -28,19 +28,20 @@ docker stats --no-stream $(docker ps --filter "name=sqllessons2" --format "{{.Na
 ```
 | CONTAINER NAME | CPU % | MEM USAGE | MEM % | BLOCK I/O | NET I/O |
 |-|-|-|-|-|-|
-| service.superset_worker-1|0.13%|217.6MiB / 3.819GiB|5.57%|305MB / 383MB|16.2MB / 2.02MB |
-| service.superset_beat-1|0.00%|15.12MiB / 3.819GiB|0.39%|66.3MB / 193MB|17.6kB / 16.2kB |
-| service.superset-1|0.04%|222.7MiB / 3.819GiB|5.69%|293MB / 171MB|2.32MB / 19.3MB |
-| service.jupyter-1|0.09%|58.95MiB / 3.819GiB|1.51%|254MB / 61.1MB|187kB / 5.96MB |
-| service.airflow-triggerer-1|1.61%|31.88MiB / 3.819GiB|0.82%|125MB / 262MB|3.8MB / 6.01MB |
-| service.airflow-worker-1|0.46%|30.82MiB / 3.819GiB|0.79%|133MB / 541MB|820kB / 879kB |
-| service.airflow-scheduler-1|5.04%|215.6MiB / 3.819GiB|5.51%|241MB / 163MB|16.4MB / 22.5MB |
-| service.airflow-dag-processor-1|32.52%|202.9MiB / 3.819GiB|5.19%|227MB / 115MB|80.7MB / 69MB |
-| service.airflow-apiserver-1|0.19%|239.2MiB / 3.819GiB|6.12%|285MB / 215MB|2.1MB / 2.03MB |
-| service.db_postgres-1|6.66%|112.5MiB / 3.819GiB|2.88%|140MB / 45.2MB|99.8MB / 104MB |
-| service.db_clickhouse-1|7.55%|362.9MiB / 3.819GiB|9.28%|1.02GB / 738MB|54.7kB / 645kB |
-| service.redis-1|0.66%|6.086MiB / 3.819GiB|0.16%|8.39MB / 1.9MB|1.77MB / 1.64MB |
-| service.smtp4dev-1|0.05%|163.4MiB / 3.819GiB|4.18%|241MB / 77.8MB|735kB / 46.2kB |
+| superset_worker|0.13%|217.6MiB / 3.819GiB|5.57%|305MB / 383MB|16.2MB / 2.02MB |
+| superset_beat|0.00%|15.12MiB / 3.819GiB|0.39%|66.3MB / 193MB|17.6kB / 16.2kB |
+| superset|0.04%|222.7MiB / 3.819GiB|5.69%|293MB / 171MB|2.32MB / 19.3MB |
+| jupyter|0.09%|58.95MiB / 3.819GiB|1.51%|254MB / 61.1MB|187kB / 5.96MB |
+| airflow-triggerer|1.61%|31.88MiB / 3.819GiB|0.82%|125MB / 262MB|3.8MB / 6.01MB |
+| airflow-worker|0.46%|30.82MiB / 3.819GiB|0.79%|133MB / 541MB|820kB / 879kB |
+| airflow-scheduler|5.04%|215.6MiB / 3.819GiB|5.51%|241MB / 163MB|16.4MB / 22.5MB |
+| airflow-dag-processor|32.52%|202.9MiB / 3.819GiB|5.19%|227MB / 115MB|80.7MB / 69MB |
+| airflow-apiserver|0.19%|239.2MiB / 3.819GiB|6.12%|285MB / 215MB|2.1MB / 2.03MB |
+| db_postgres|6.66%|112.5MiB / 3.819GiB|2.88%|140MB / 45.2MB|99.8MB / 104MB |
+| db_clickhouse|7.55%|362.9MiB / 3.819GiB|9.28%|1.02GB / 738MB|54.7kB / 645kB |
+| redis|0.66%|6.086MiB / 3.819GiB|0.16%|8.39MB / 1.9MB|1.77MB / 1.64MB |
+| smtp4dev|0.05%|163.4MiB / 3.819GiB|4.18%|241MB / 77.8MB|735kB / 46.2kB |
+
 
 ## Как запустить
 `docker compose  up --build`

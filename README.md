@@ -28,20 +28,14 @@ docker stats --no-stream $(docker ps --filter "name=sqllessons2" --format "{{.Na
 ```
 | CONTAINER NAME | CPU % | MEM USAGE | MEM % | BLOCK I/O | NET I/O |
 |-|-|-|-|-|-|
-| service.superset_worker-1|0.31%|371.8MiB / 3.819GiB|9.51%|295MB / 320MB|6.5MB / 825kB |
-| service.superset_beat-1|0.00%|28.47MiB / 3.819GiB|0.73%|65.1MB / 184MB|16.6kB / 12.5kB |
-| service.superset-1|0.03%|151.5MiB / 3.819GiB|3.87%|202MB / 166MB|693kB / 6.38MB |
-| service.jupyter-1|13.12%|21.15MiB / 3.819GiB|0.54%|154MB / 60.8MB|3.08kB / 126B |
-| service.airflow-triggerer-1|1.77%|37.85MiB / 3.819GiB|0.97%|125MB / 258MB|1.52MB / 2.4MB |
-| service.airflow-worker-1|0.23%|121.4MiB / 3.819GiB|3.10%|132MB / 446MB|332kB / 357kB |
-| service.airflow-scheduler-1|2.10%|182.5MiB / 3.819GiB|4.67%|138MB / 29.3MB|6.55MB / 9MB |
-| service.airflow-dag-processor-1|31.55%|244.2MiB / 3.819GiB|6.24%|193MB / 70.2MB|32.2MB / 27.7MB |
-| service.airflow-apiserver-1|0.17%|151.7MiB / 3.819GiB|3.88%|78.1MB / 111MB|448kB / 228kB |
-| service.db_postgres-1|6.08%|59.75MiB / 3.819GiB|1.53%|52.7MB / 37.4MB|39.6MB / 41.3MB |
-| service.db_clickhouse-1|20.36%|405.1MiB / 3.819GiB|10.36%|917MB / 460MB|13.7kB / 145kB |
-| service.redis-1|0.65%|6.906MiB / 3.819GiB|0.18%|7.39MB / 1.88MB|720kB / 657kB |
-| service.smtp4dev-1|0.22%|101.8MiB / 3.819GiB|2.60%|171MB / 59.3MB|287kB / 8.45kB |
-
+| sqllessons2-service.superset_worker-1|0.24%|443.7MiB / 3.819GiB|11.34%|36.5MB / 12.3kB|861kB / 909kB |
+| sqllessons2-service.superset_beat-1|0.00%|239.3MiB / 3.819GiB|6.12%|28.2MB / 0B|14.1kB / 8.53kB |
+| sqllessons2-service.jupyter-1|0.09%|81.03MiB / 3.819GiB|2.07%|46.5MB / 1.4MB|1.9kB / 126B |
+| sqllessons2-service.superset-1|0.05%|255.1MiB / 3.819GiB|6.52%|96.8MB / 0B|11.3kB / 6.07kB |
+| sqllessons2-service.db_postgres-1|0.01%|43.73MiB / 3.819GiB|1.12%|17.1MB / 12.3kB|24.7kB / 34.6kB |
+| sqllessons2-service.db_clickhouse-1|9.70%|897.7MiB / 3.819GiB|22.95%|529MB / 439MB|1.99kB / 126B |
+| sqllessons2-service.redis-1|0.96%|9.098MiB / 3.819GiB|0.23%|3.66MB / 0B|902kB / 847kB |
+| sqllessons2-service.smtp4dev-1|0.08%|73.44MiB / 3.819GiB|1.88%|48.8MB / 32.8kB|2.03kB / 126B |
 
 
 
@@ -227,6 +221,7 @@ from my_module.my_func import (
     get_uniq_estimation,
     highlight_values,
 )
+
 ```
 
     Default dirty pages decay period: 5000ms
@@ -245,9 +240,7 @@ if hostname == "home-NMH-WDX9":
     in_docker = False
 
 if in_docker:
-    file = (
-        Path(Path.cwd().parent) / "db/raw_data/cars/cars_sales_zstd.parquet"
-    ).as_posix()
+    file = (Path(Path.cwd().parent) / "db/raw_data/cars/cars_sales_zstd.parquet").as_posix()
 else:
     file = (
         Path(Path.cwd().parent.parent.parent)
@@ -269,6 +262,7 @@ with pd.option_context(
     "{:.2f}".format,
 ):
     display(dsf.describe())
+
 ```
 
 
@@ -427,6 +421,7 @@ rez_styled = df_rez_null_count.style.apply(
 ).format({"Null Count %": "{:.2f}", "Uniq Count %": "{:.2f}"})
 
 rez_styled
+
 ```
 
 
@@ -917,6 +912,7 @@ from my_module.my_func import (
     get_uniq_estimation,
     highlight_values,
 )
+
 ```
 
     time: 821 ms (started: 2026-05-31 07:20:49 +03:00)
@@ -1092,6 +1088,7 @@ rez_styled = df_rez_null_count.style.apply(
 ).format({"Null Count %": "{:.2f}", "Uniq Count %": "{:.2f}"})
 
 rez_styled
+
 ```
 
 
@@ -1505,6 +1502,7 @@ plt.ylabel("Количество NULL")
 plt.xticks(rotation=90)
 plt.tight_layout()
 plt.show()
+
 ```
 
 
@@ -1560,6 +1558,7 @@ with pd.option_context(
     False,
 ):
     display(totals_df)
+
 ```
 
 
@@ -1686,6 +1685,7 @@ df_renamed = df.rename(
 
 for group_id in range(1, sample_count + 1):
     dfs.append(df_renamed[df_renamed["tile"] == group_id])  # noqa: PERF401
+
 ```
 
     time: 5.71 s (started: 2026-05-31 07:20:52 +03:00)
@@ -1867,6 +1867,7 @@ with pd.option_context(
     False,
 ):
     display(combined_desc)
+
 ```
 
 
@@ -2120,6 +2121,7 @@ with pd.option_context(
     False,
 ):
     display(result)
+
 ```
 
 
@@ -2296,6 +2298,7 @@ plt.xticks(rotation=45)
 ax.grid(axis="y", alpha=0.3)
 plt.tight_layout()
 plt.show()
+
 ```
 
 
@@ -2364,6 +2367,7 @@ for idx, df_number in enumerate(dfs):
     axes[3].set_title("Зависимость мощности от года выпуска")
 
 plt.show()
+
 ```
 
 

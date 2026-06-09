@@ -28,16 +28,19 @@ docker stats --no-stream $(docker ps --filter "name=sqllessons2" --format "{{.Na
 ```
 | CONTAINER NAME | CPU % | MEM USAGE | MEM % | BLOCK I/O | NET I/O |
 |-|-|-|-|-|-|
-| sqllessons2-service.superset_worker-1|0.24%|443.7MiB / 3.819GiB|11.34%|36.5MB / 12.3kB|861kB / 909kB |
-| sqllessons2-service.superset_beat-1|0.00%|239.3MiB / 3.819GiB|6.12%|28.2MB / 0B|14.1kB / 8.53kB |
-| sqllessons2-service.jupyter-1|0.09%|81.03MiB / 3.819GiB|2.07%|46.5MB / 1.4MB|1.9kB / 126B |
-| sqllessons2-service.superset-1|0.05%|255.1MiB / 3.819GiB|6.52%|96.8MB / 0B|11.3kB / 6.07kB |
-| sqllessons2-service.db_postgres-1|0.01%|43.73MiB / 3.819GiB|1.12%|17.1MB / 12.3kB|24.7kB / 34.6kB |
-| sqllessons2-service.db_clickhouse-1|9.70%|897.7MiB / 3.819GiB|22.95%|529MB / 439MB|1.99kB / 126B |
-| sqllessons2-service.redis-1|0.96%|9.098MiB / 3.819GiB|0.23%|3.66MB / 0B|902kB / 847kB |
-| sqllessons2-service.smtp4dev-1|0.08%|73.44MiB / 3.819GiB|1.88%|48.8MB / 32.8kB|2.03kB / 126B |
-
-
+| service.superset_worker-1|0.13%|217.6MiB / 3.819GiB|5.57%|305MB / 383MB|16.2MB / 2.02MB |
+| service.superset_beat-1|0.00%|15.12MiB / 3.819GiB|0.39%|66.3MB / 193MB|17.6kB / 16.2kB |
+| service.superset-1|0.04%|222.7MiB / 3.819GiB|5.69%|293MB / 171MB|2.32MB / 19.3MB |
+| service.jupyter-1|0.09%|58.95MiB / 3.819GiB|1.51%|254MB / 61.1MB|187kB / 5.96MB |
+| service.airflow-triggerer-1|1.61%|31.88MiB / 3.819GiB|0.82%|125MB / 262MB|3.8MB / 6.01MB |
+| service.airflow-worker-1|0.46%|30.82MiB / 3.819GiB|0.79%|133MB / 541MB|820kB / 879kB |
+| service.airflow-scheduler-1|5.04%|215.6MiB / 3.819GiB|5.51%|241MB / 163MB|16.4MB / 22.5MB |
+| service.airflow-dag-processor-1|32.52%|202.9MiB / 3.819GiB|5.19%|227MB / 115MB|80.7MB / 69MB |
+| service.airflow-apiserver-1|0.19%|239.2MiB / 3.819GiB|6.12%|285MB / 215MB|2.1MB / 2.03MB |
+| service.db_postgres-1|6.66%|112.5MiB / 3.819GiB|2.88%|140MB / 45.2MB|99.8MB / 104MB |
+| service.db_clickhouse-1|7.55%|362.9MiB / 3.819GiB|9.28%|1.02GB / 738MB|54.7kB / 645kB |
+| service.redis-1|0.66%|6.086MiB / 3.819GiB|0.16%|8.39MB / 1.9MB|1.77MB / 1.64MB |
+| service.smtp4dev-1|0.05%|163.4MiB / 3.819GiB|4.18%|241MB / 77.8MB|735kB / 46.2kB |
 
 ## Как запустить
 `docker compose  up --build`

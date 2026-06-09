@@ -25,7 +25,7 @@ RUN uv pip install "apache-superset[fastmcp]"
 
 USER superset
 
-COPY ./services/superset/superset_config.py /app/pythonpath/superset_config.py
-COPY ./services/superset/playwright_screenshot.py /app/pythonpath/playwright_screenshot.py
+COPY ./services/superset/config/superset_config.py /app/pythonpath/superset_config.py
+# COPY ./services/superset/config/playwright_screenshot.py /app/pythonpath/playwright_screenshot.py
 
 # CMD ["/app/docker/entrypoints/run-server.sh"]

@@ -39,6 +39,7 @@ FEATURE_FLAGS = {
     "DRILL_TO_DETAIL": True,
     "ALERT_REPORTS": True,
     "DATE_FORMAT_IN_EMAIL_SUBJECT": True,
+    "PLAYWRIGHT_REPORTS_AND_THUMBNAILS": True,
 }
 
 
@@ -55,7 +56,7 @@ SMTP_STARTTLS = True  # использовать STARTTLS
 SMTP_SSL = False  # использовать SSL (если SMTP_STARTTLS=False)
 SMTP_USER = ""  # логин (может быть пустым для неаутентифицированного SMTP)
 SMTP_PASSWORD = ""  # пароль (может быть пустым)
-SMTP_MAIL_FROM = "noreply@example.com"  # email отправителя
+SMTP_MAIL_FROM = "report@analytics.com"  # email отправителя
 
 ALERT_REPORTS_NOTIFICATION_DRY_RUN = False
 ALERT_REPORTS_EXECUTORS = [FixedExecutor("admin")]
@@ -99,36 +100,4 @@ CELERY_CONFIG = CeleryConfig
 PLAYWRIGHT_REPORTS_AND_THUMBNAILS = True
 WEBDRIVER_BASEURL = "http://service.superset:8088"
 WEBDRIVER_BASEURL_USER_FRIENDLY = "http://localhost:8088"
-# Отключаем стандартный WebDriver
-# WEBDRIVER_NAME = None
 
-# # Указываем кастомную функцию для скриншотов через Playwright
-# SCREENSHOT_FUNCTION = "playwright_screenshot.take_screenshot"
-# SCREENSHOT_FUNCTION = "superset.tasks.thumbnails.playwright_screenshot.take_screenshot"
-
-
-# # Папка для временных скриншотов
-# SCREENSHOTS_DIR = "/tmp/superset_screenshots"
-# # Включение подробного логирования для отладки
-# SCREENSHOTS_LOG_VERBOSE = True
-
-
-# Настройки Playwright
-PLAYWRIGHT_OPTIONS = {
-    "headless": True,  # Без графического интерфейса
-    "viewport": {"width": 1920, "height": 1080},  # Разрешение экрана
-    "ignore_https_errors": True,  # Игнорировать ошибки SSL
-    "slow_mo": 0,  # Замедление (мс) для отладки (0 = выкл.)
-    "timeout": 30000,  # Таймаут в мс (30 сек)
-}
-
-# Дополнительные опции браузера
-PLAYWRIGHT_BROWSER_OPTIONS = {
-    "args": [
-        "--no-sandbox",
-        "--disable-dev-shm-usage",
-        "--disable-gpu",
-        "--disable-web-security",
-        "--disable-features=VizDisplayCompositor",
-    ]
-}

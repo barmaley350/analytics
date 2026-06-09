@@ -47,39 +47,39 @@ services:
   # ----------------------------------------------------------------------------
   # apache superset worker
   # ----------------------------------------------------------------------------
-  # service.superset_worker:
-  #   build:
-  #     context: .
-  #     dockerfile: ./services/superset/Dockerfiles/Dockerfile.celery_worker
-  #   env_file:
-  #     - .env
-  #   restart: unless-stopped      
-  #   depends_on:
-  #     - service.redis
-  #     - service.superset
-  #   volumes:
-  #     - ./services/superset/celerybeat:/home/superset/celerybeat        
-  #   networks:
-  #     - internal-net      
-  #   command: celery -A superset.tasks.celery_app worker -l INFO -c 2
+  service.superset_worker:
+    build:
+      context: .
+      dockerfile: ./services/superset/Dockerfiles/Dockerfile.celery_worker
+    env_file:
+      - .env
+    restart: unless-stopped      
+    depends_on:
+      - service.redis
+      - service.superset
+    volumes:
+      - ./services/superset/celerybeat:/home/superset/celerybeat        
+    networks:
+      - internal-net      
+    command: celery -A superset.tasks.celery_app worker -l INFO -c 2
   # ----------------------------------------------------------------------------
   # apache superset beat
   # ----------------------------------------------------------------------------
-  # service.superset_beat:
-  #   build:
-  #     context: .
-  #     dockerfile: ./services/superset/Dockerfiles/Dockerfile.celery_beat
-  #   env_file:
-  #     - .env
-  #   depends_on:
-  #     - service.redis
-  #     - service.superset
-  #   volumes:
-  #     - ./services/superset/celerybeat:/home/superset/celerybeat      
-  #   restart: unless-stopped      
-  #   networks:
-  #     - internal-net      
-  #   command: celery -A superset.tasks.celery_app beat -s /home/superset/celerybeat/celerybeat-schedule -l INFO    
+  service.superset_beat:
+    build:
+      context: .
+      dockerfile: ./services/superset/Dockerfiles/Dockerfile.celery_beat
+    env_file:
+      - .env
+    depends_on:
+      - service.redis
+      - service.superset
+    volumes:
+      - ./services/superset/celerybeat:/home/superset/celerybeat      
+    restart: unless-stopped      
+    networks:
+      - internal-net      
+    command: celery -A superset.tasks.celery_app beat -s /home/superset/celerybeat/celerybeat-schedule -l INFO    
 
   # ----------------------------------------------------------------------------
   # Redis

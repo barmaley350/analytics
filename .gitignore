@@ -24,3 +24,6 @@ services/postgres/db/
 
 # JupyterLab
 .ipynb_checkpoints
+
+# Apache Airflow
+services/airflow/logs/

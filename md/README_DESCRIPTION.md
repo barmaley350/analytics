@@ -40,6 +40,65 @@ docker stats --no-stream $(docker ps --filter "name=sqllessons2" --format "{{.Na
 | redis|0.66%|6.086MiB / 3.819GiB|0.16%|8.39MB / 1.9MB|1.77MB / 1.64MB |
 | smtp4dev|0.05%|163.4MiB / 3.819GiB|4.18%|241MB / 77.8MB|735kB / 46.2kB |
 
+```mermaid
+graph LR
+  subgraph "Network: internal-net"
+    direction TB
 
+    %% Core Airflow
+    airflow_api[Airflow API<br/>apiserver]
+    airflow_scheduler[Airflow Scheduler]
+    airflow_dag_processor[Airflow DAG Processor]
+    airflow_worker[Airflow Worker<br/>celery]
+    airflow_triggerer[Airflow Triggerer]
+
+    %% Superset
+    superset[Superset UI]
+    superset_worker[Superset Worker<br/>celery]
+    superset_beat[Superset Beat<br/>celery beat]
+
+    %% Dependencies
+    redis[Redis]
+    postgres[PostgreSQL]
+    clickhouse[ClickHouse]
+    smtp4dev[SMTP4Dev]
+    jupyter[Jupyter]
+  end
+
+  %% Airflow core dependencies
+  airflow_api -->|depends_on| redis
+  airflow_api -->|depends_on| postgres
+
+  airflow_scheduler -->|depends_on| redis
+  airflow_scheduler -->|depends_on| postgres
+
+  airflow_dag_processor -->|depends_on| redis
+  airflow_dag_processor -->|depends_on| postgres
+
+  airflow_worker -->|depends_on| redis
+  airflow_worker -->|depends_on| postgres
+  airflow_worker -->|depends_on| airflow_api
+
+  airflow_triggerer -->|depends_on| redis
+  airflow_triggerer -->|depends_on| postgres
+  airflow_triggerer -->|depends_on| airflow_api
+
+  %% Superset dependencies
+  superset -->|depends_on| redis
+  superset -->|depends_on| postgres
+
+  superset_worker -->|depends_on| redis
+  superset_worker -->|depends_on| superset
+
+  superset_beat -->|depends_on| redis
+  superset_beat -->|depends_on| superset
+
+  %% Other services (no strict depends_on in compose, but part of the stack)
+  jupyter
+  clickhouse
+  smtp4dev
+
+
+```
 ## Как запустить
 `docker compose  up --build`

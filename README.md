@@ -43,67 +43,101 @@ docker stats --no-stream $(docker ps --filter "name=sqllessons2" --format "{{.Na
 | smtp4dev|0.05%|163.4MiB / 3.819GiB|4.18%|241MB / 77.8MB|735kB / 46.2kB |
 
 ```mermaid
-graph LR
-  subgraph "Network: internal-net"
-    direction TB
-
-    %% Core Airflow
-    airflow_api[Airflow API<br/>apiserver]
-    airflow_scheduler[Airflow Scheduler]
-    airflow_dag_processor[Airflow DAG Processor]
-    airflow_worker[Airflow Worker<br/>celery]
-    airflow_triggerer[Airflow Triggerer]
-
-    %% Superset
-    superset[Superset UI]
-    superset_worker[Superset Worker<br/>celery]
-    superset_beat[Superset Beat<br/>celery beat]
-
-    %% Dependencies
-    redis[Redis]
-    postgres[PostgreSQL]
-    clickhouse[ClickHouse]
-    smtp4dev[SMTP4Dev]
-    jupyter[Jupyter]
+flowchart TD
+  subgraph Profiles ["Профили (COMPOSE_PROFILES)"]
+    P_airflow["airflow"]
+    P_jupyter["jupyter"]
+    P_superset["superset"]
+    P_redis["redis"]
+    P_postgres["postgres"]
+    P_smtp4dev["smtp4dev"]
+    P_clickhouse["clickhouse"]
   end
 
-  %% Airflow core dependencies
-  airflow_api -->|depends_on| redis
-  airflow_api -->|depends_on| postgres
+  subgraph Airflow ["Airflow (профиль: airflow)"]
+    A_api["service.airflow-apiserver"]
+    A_sched["service.airflow-scheduler"]
+    A_proc["service.airflow-dag-processor"]
+    A_worker["service.airflow-worker<br/>(celery worker)"]
+    A_trigger["service.airflow-triggerer"]
+  end
 
-  airflow_scheduler -->|depends_on| redis
-  airflow_scheduler -->|depends_on| postgres
+  subgraph Jupyter ["Jupyter (профиль: jupyter)"]
+    J_jupyter["service.jupyter"]
+  end
 
-  airflow_dag_processor -->|depends_on| redis
-  airflow_dag_processor -->|depends_on| postgres
+  subgraph Superset ["Superset (профиль: superset)"]
+    S_web["service.superset"]
+    S_worker["service.superset_worker<br/>(celery worker)"]
+    S_beat["service.superset_beat<br/>(celery beat)"]
+  end
 
-  airflow_worker -->|depends_on| redis
-  airflow_worker -->|depends_on| postgres
-  airflow_worker -->|depends_on| airflow_api
+  subgraph Infra ["Инфраструктура (общие профили)"]
+    R_redis["service.redis"]
+    DB_pg["service.db_postgres"]
+    DB_ch["service.db_clickhouse"]
+    SMTP["service.smtp4dev"]
+  end
 
-  airflow_triggerer -->|depends_on| redis
-  airflow_triggerer -->|depends_on| postgres
-  airflow_triggerer -->|depends_on| airflow_api
+  %% Зависимости Airflow
+  A_api -->|depends_on| R_redis
+  A_api -->|depends_on| DB_pg
+  A_sched -->|depends_on| R_redis
+  A_sched -->|depends_on| DB_pg
+  A_proc -->|depends_on| R_redis
+  A_proc -->|depends_on| DB_pg
+  A_worker -->|depends_on| R_redis
+  A_worker -->|depends_on| DB_pg
+  A_worker -->|depends_on| A_api
+  A_trigger -->|depends_on| R_redis
+  A_trigger -->|depends_on| DB_pg
+  A_trigger -->|depends_on| A_api
 
-  %% Superset dependencies
-  superset -->|depends_on| redis
-  superset -->|depends_on| postgres
+  %% Зависимости Superset
+  S_web -->|depends_on| R_redis
+  S_web -->|depends_on| DB_pg
+  S_worker -->|depends_on| R_redis
+  S_worker -->|depends_on| S_web
+  S_beat -->|depends_on| R_redis
+  S_beat -->|depends_on| S_web
 
-  superset_worker -->|depends_on| redis
-  superset_worker -->|depends_on| superset
+  %% Привязка профилей к сервисам
+  P_airflow -.-> A_api
+  P_airflow -.-> A_sched
+  P_airflow -.-> A_proc
+  P_airflow -.-> A_worker
+  P_airflow -.-> A_trigger
 
-  superset_beat -->|depends_on| redis
-  superset_beat -->|depends_on| superset
+  P_jupyter -.-> J_jupyter
 
-  %% Other services (no strict depends_on in compose, but part of the stack)
-  jupyter
-  clickhouse
-  smtp4dev
+  P_superset -.-> S_web
+  P_superset -.-> S_worker
+  P_superset -.-> S_beat
 
+  P_redis -.-> R_redis
+  P_postgres -.-> DB_pg
+  P_smtp4dev -.-> SMTP
+  P_clickhouse -.-> DB_ch
+
+  style P_airflow fill:#e1f5fe,stroke:#0277bd
+  style P_jupyter fill:#fff3e0,stroke:#ef6c00
+  style P_superset fill:#f3e5f5,stroke:#7b1fa2
+  style P_redis fill:#e8f5e9,stroke:#2e7d32
+  style P_postgres fill:#e3f2fd,stroke:#1565c0
+  style P_smtp4dev fill:#f5f5f5,stroke:#616161
+  style P_clickhouse fill:#fff8e1,stroke:#f57f17
 
 ```
 ## Как запустить
-`docker compose  up --build`
+Для упрощения запуска есть файл `docker.sh` но можно и в ручную
+
+```
+COMPOSE_PROFILES=superset docker compose up --build
+```
+или
+```
+docker compose --profile superset up --build
+```
 
 # Работа с `clickhouse-local`
 ## Конвертируем файлы из `csv` в `parquet`

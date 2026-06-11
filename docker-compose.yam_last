@@ -1,0 +1,238 @@
+---
+x-airflow-common:
+  volumes: &airflow-volumes
+    - ./services/airflow/dags:/opt/airflow/dags
+    - ./services/airflow/logs:/opt/airflow/logs
+    - ./services/airflow/config:/opt/airflow/config
+    - ./services/airflow/plugins:/opt/airflow/plugins
+
+networks:
+  internal-net:
+
+volumes:
+  analytics-clickhouse-data-volume:
+  analytics-clickhouse-logs-volume:
+  analytics-smtp4dev-volume:
+
+services:
+  # ----------------------------------------------------------------------------
+  # airflow-apiserver
+  # ----------------------------------------------------------------------------
+  service.airflow-apiserver:
+    image: apache/airflow:3.2.2
+    command: api-server
+    ports:
+      - "8080:8080"    
+    env_file:
+      - .env
+    volumes: *airflow-volumes
+    user: "${AIRFLOW_UID:-50000}:0"
+    depends_on:
+      - service.redis
+      - service.db_postgres 
+    networks:
+      - internal-net
+
+  # ----------------------------------------------------------------------------
+  # airflow-scheduler
+  # ----------------------------------------------------------------------------
+  service.airflow-scheduler:
+    image: apache/airflow:3.2.2
+    env_file:
+      - .env
+    volumes: *airflow-volumes
+    command: scheduler
+    restart: always
+    depends_on:
+      - service.redis
+      - service.db_postgres 
+    networks:
+      - internal-net
+
+  # ----------------------------------------------------------------------------
+  # airflow-scheduler
+  # ----------------------------------------------------------------------------
+  service.airflow-dag-processor:
+    image: apache/airflow:3.2.2
+    env_file:
+      - .env
+    volumes: *airflow-volumes
+    command: dag-processor
+    restart: always
+    depends_on:
+      - service.redis
+      - service.db_postgres 
+    networks:
+      - internal-net
+
+  # ----------------------------------------------------------------------------
+  # airflow-worker
+  # ----------------------------------------------------------------------------
+  service.airflow-worker:
+    image: apache/airflow:3.2.2
+    env_file:
+      - .env
+    volumes: *airflow-volumes
+    command: celery worker
+    restart: always
+    depends_on:
+      - service.redis
+      - service.db_postgres 
+      - service.airflow-apiserver
+    networks:
+      - internal-net
+
+  # ----------------------------------------------------------------------------
+  # airflow-worker
+  # ----------------------------------------------------------------------------
+  service.airflow-triggerer:
+    image: apache/airflow:3.2.2
+    env_file:
+      - .env
+    volumes: *airflow-volumes
+    command: triggerer
+    restart: always
+    depends_on:
+      - service.redis
+      - service.db_postgres 
+      - service.airflow-apiserver
+    networks:
+      - internal-net
+
+  # ----------------------------------------------------------------------------
+  # jupyter
+  # ----------------------------------------------------------------------------
+  service.jupyter:
+    build:
+      context: .
+      dockerfile: ./services/jupyter/Dockerfile
+    ports:
+      - 8888:8888      
+    volumes:
+      - ./services/jupyter/notebooks:/home/jovyan/work/notebooks
+      - ./datasets:/home/jovyan/work/db
+    restart: unless-stopped
+    networks:
+      - internal-net
+
+  # ----------------------------------------------------------------------------
+  # apache superset
+  # ----------------------------------------------------------------------------
+  service.superset:
+    build:
+      context: .
+      dockerfile: ./services/superset/Dockerfiles/Dockerfile.superset
+    ports:
+      - 8088:8088
+    volumes:
+      - ./services/superset/data:/app/superset_home
+      - ./datasets:/app/database
+    env_file:
+      - .env
+    depends_on:
+      - service.redis
+      - service.db_postgres  
+    restart: unless-stopped
+    networks:
+      - internal-net
+ 
+  # ----------------------------------------------------------------------------
+  # apache superset worker
+  # ----------------------------------------------------------------------------
+  service.superset_worker:
+    build:
+      context: .
+      dockerfile: ./services/superset/Dockerfiles/Dockerfile.celery_worker
+    env_file:
+      - .env
+    restart: unless-stopped      
+    depends_on:
+      - service.redis
+      - service.superset
+    volumes:
+      - ./services/superset/celerybeat:/home/superset/celerybeat 
+      - ~/.cache/ms-playwright/:/usr/local/share/playwright-browsers
+    networks:
+      - internal-net      
+    command: celery -A superset.tasks.celery_app worker -l INFO -c 2
+  # ----------------------------------------------------------------------------
+  # apache superset beat
+  # ----------------------------------------------------------------------------
+  service.superset_beat:
+    build:
+      context: .
+      dockerfile: ./services/superset/Dockerfiles/Dockerfile.celery_beat
+    env_file:
+      - .env
+    depends_on:
+      - service.redis
+      - service.superset
+    volumes:
+      - ./services/superset/celerybeat:/home/superset/celerybeat      
+    restart: unless-stopped      
+    networks:
+      - internal-net      
+    command: celery -A superset.tasks.celery_app beat -s /home/superset/celerybeat/celerybeat-schedule -l INFO    
+
+  # ----------------------------------------------------------------------------
+  # Redis
+  # ----------------------------------------------------------------------------
+  service.redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    restart: unless-stopped      
+    networks:
+      - internal-net       
+  # ----------------------------------------------------------------------------
+  # PostreSQL
+  # ----------------------------------------------------------------------------
+  service.db_postgres:
+    image: postgres
+    ports:
+      - 5432:5432
+    volumes:
+      - ./services/postgres/db:/var/lib/postgresql/18/docker
+      - ./services/postgres/init:/docker-entrypoint-initdb.d
+    env_file:
+      - .env
+    restart: unless-stopped
+    networks:
+      - internal-net
+
+  # ----------------------------------------------------------------------------
+  # smtp4dev
+  # ----------------------------------------------------------------------------
+  service.smtp4dev:
+    image: rnwood/smtp4dev:prerelease
+    ports:
+      - 5000:80
+      - 2525:25
+      - 110:110
+    volumes:
+      - analytics-smtp4dev-volume:/smtp4dev
+    restart: unless-stopped
+    networks:
+      - internal-net  
+
+  # ----------------------------------------------------------------------------
+  # ClickHouse
+  # ----------------------------------------------------------------------------
+  service.db_clickhouse:
+    image: clickhouse/clickhouse-server:latest
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+    env_file:
+      - .env
+    volumes:
+      - analytics-clickhouse-data-volume:/var/lib/clickhouse
+      - analytics-clickhouse-logs-volume:/var/log/clickhouse-server
+      - ./datasets:/var/lib/clickhouse/user_files
+      - ./services/clickhouse/sql:/sql-files   
+      # - ./services/clickhouse/data/config/config.xml:/etc/clickhouse-server/config.d/config.xml
+      # - ./services/clickhouse/data/config/users.xml:/etc/clickhouse-server/config.d/users.xml       
+    restart: unless-stopped
+    networks:
+      - internal-net      
+ 

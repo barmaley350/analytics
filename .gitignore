@@ -27,3 +27,6 @@ services/postgres/db/
 
 # Apache Airflow
 services/airflow/logs/
+
+# tmp
+docker-compose.yaml_last

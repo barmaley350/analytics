@@ -10,8 +10,13 @@ dependencies = [
     "nbconvert>=7.17.1",
     "nbformat>=5.10.4",
     "pandas>=3.0.2",
-    "ruff>=0.15.11",
     "tabulate>=0.10.0",
+]
+
+[dependency-groups]
+dev = [
+    "pylint>=4.0.5",
+    "ruff>=0.15.16",
 ]
 
 [tool.ruff]
@@ -35,3 +40,4 @@ dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 # Prefer single quotes over double quotes.
 quote-style = "double"
 preview = true
+

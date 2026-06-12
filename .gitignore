@@ -30,3 +30,4 @@ services/airflow/logs/
 
 # tmp
 docker-compose.yaml_last
+run2.sh

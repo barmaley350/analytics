@@ -129,7 +129,7 @@ flowchart TD
 
 ```
 ## Как запустить
-Для упрощения запуска есть файл `docker.sh` но можно и в ручную
+Для упрощения запуска есть файл `rdocker.sh` но можно и в ручную
 
 ```
 COMPOSE_PROFILES=superset docker compose up --build
